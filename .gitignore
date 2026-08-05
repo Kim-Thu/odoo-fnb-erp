@@ -1,0 +1,33 @@
+# Secrets and local runtime configuration
+.env
+.env.*
+!.env.example
+config/odoo.conf
+config/*.local.conf
+*.pem
+*.key
+*.crt
+
+# Odoo runtime
+*.log
+*.pid
+*.session
+filestore/
+data/
+backups/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
