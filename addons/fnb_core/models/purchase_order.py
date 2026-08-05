@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 
 
 class PurchaseOrder(models.Model):
@@ -31,7 +31,12 @@ class PurchaseOrder(models.Model):
     approved_at = fields.Datetime(readonly=True, copy=False)
     rejection_reason = fields.Text(readonly=True, copy=False)
 
-    @api.depends("amount_total", "company_id.fnb_purchase_approval_limit", "state")
+    @api.depends(
+        "amount_total",
+        "company_id.fnb_purchase_approval_limit",
+        "approved_by_id",
+        "rejection_reason",
+    )
     def _compute_approval_state(self):
         for order in self:
             limit = order.company_id.fnb_purchase_approval_limit
@@ -46,6 +51,33 @@ class PurchaseOrder(models.Model):
             else:
                 order.approval_state = "pending"
 
+    def write(self, values):
+        protected_fields = {"approved_by_id", "approved_at", "rejection_reason"}
+        if protected_fields.intersection(values) and not self.env.context.get(
+            "fnb_approval_action"
+        ):
+            raise AccessError(_("Approval audit fields cannot be edited directly."))
+
+        business_fields = {
+            "partner_id",
+            "currency_id",
+            "company_id",
+            "order_line",
+        }
+        if business_fields.intersection(values) and any(self.mapped("approved_by_id")):
+            values = dict(values)
+            values.update(
+                {
+                    "approved_by_id": False,
+                    "approved_at": False,
+                    "rejection_reason": False,
+                }
+            )
+            return super(
+                PurchaseOrder, self.with_context(fnb_approval_action=True)
+            ).write(values)
+        return super().write(values)
+
     def action_approve_fnb(self):
         self.ensure_one()
         if not self.env.user.has_group("fnb_core.group_fnb_purchase_approver"):
@@ -55,7 +87,7 @@ class PurchaseOrder(models.Model):
         if not self.approval_required:
             raise ValidationError(_("This purchase order does not require approval."))
 
-        self.write(
+        self.with_context(fnb_approval_action=True).write(
             {
                 "approved_by_id": self.env.user.id,
                 "approved_at": fields.Datetime.now(),
@@ -72,10 +104,10 @@ class PurchaseOrder(models.Model):
             raise ValidationError(_("Only draft RFQs can be rejected."))
 
         reason = self.env.context.get("fnb_rejection_reason")
-        if not reason:
+        if not reason or not reason.strip():
             raise ValidationError(_("A rejection reason is required."))
 
-        self.write(
+        self.with_context(fnb_approval_action=True).write(
             {
                 "approved_by_id": False,
                 "approved_at": False,
