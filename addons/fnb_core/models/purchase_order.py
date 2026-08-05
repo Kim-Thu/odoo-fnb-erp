@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, ValidationError
 
 
 class PurchaseOrder(models.Model):
@@ -51,6 +51,10 @@ class PurchaseOrder(models.Model):
             else:
                 order.approval_state = "pending"
 
+    def _check_purchase_approver(self):
+        if not self.env.user.has_group("fnb_core.group_fnb_purchase_approver"):
+            raise AccessError(_("You are not allowed to approve or reject purchase orders."))
+
     def write(self, values):
         protected_fields = {"approved_by_id", "approved_at", "rejection_reason"}
         if protected_fields.intersection(values) and not self.env.context.get(
@@ -64,7 +68,9 @@ class PurchaseOrder(models.Model):
             "company_id",
             "order_line",
         }
-        if business_fields.intersection(values) and any(self.mapped("approved_by_id")):
+        if business_fields.intersection(values) and any(
+            order.approved_by_id or order.rejection_reason for order in self
+        ):
             values = dict(values)
             values.update(
                 {
@@ -80,8 +86,7 @@ class PurchaseOrder(models.Model):
 
     def action_approve_fnb(self):
         self.ensure_one()
-        if not self.env.user.has_group("fnb_core.group_fnb_purchase_approver"):
-            raise UserError(_("You are not allowed to approve purchase orders."))
+        self._check_purchase_approver()
         if self.state not in ("draft", "sent"):
             raise ValidationError(_("Only draft RFQs can be approved."))
         if not self.approval_required:
@@ -96,22 +101,42 @@ class PurchaseOrder(models.Model):
         )
         return True
 
-    def action_reject_fnb(self):
+    def action_open_rejection_wizard(self):
         self.ensure_one()
-        if not self.env.user.has_group("fnb_core.group_fnb_purchase_approver"):
-            raise UserError(_("You are not allowed to reject purchase orders."))
+        self._check_purchase_approver()
         if self.state not in ("draft", "sent"):
             raise ValidationError(_("Only draft RFQs can be rejected."))
+        if not self.approval_required:
+            raise ValidationError(_("This purchase order does not require approval."))
 
-        reason = self.env.context.get("fnb_rejection_reason")
-        if not reason or not reason.strip():
-            raise ValidationError(_("A rejection reason is required."))
+        return {
+            "type": "ir.actions.act_window",
+            "name": _("Reject Purchase Order"),
+            "res_model": "fnb.purchase.rejection.wizard",
+            "view_mode": "form",
+            "target": "new",
+            "context": {"default_purchase_order_id": self.id},
+        }
+
+    def action_reject_fnb(self, reason):
+        self.ensure_one()
+        self._check_purchase_approver()
+        if self.state not in ("draft", "sent"):
+            raise ValidationError(_("Only draft RFQs can be rejected."))
+        if not self.approval_required:
+            raise ValidationError(_("This purchase order does not require approval."))
+
+        clean_reason = (reason or "").strip()
+        if len(clean_reason) < 5:
+            raise ValidationError(
+                _("The rejection reason must contain at least 5 characters.")
+            )
 
         self.with_context(fnb_approval_action=True).write(
             {
                 "approved_by_id": False,
                 "approved_at": False,
-                "rejection_reason": reason.strip(),
+                "rejection_reason": clean_reason,
             }
         )
         return True
