@@ -16,6 +16,9 @@ filestore/
 data/
 backups/
 
+# Local autonomous agent runtime
+.agent-logs/
+
 # Python
 __pycache__/
 *.py[cod]
