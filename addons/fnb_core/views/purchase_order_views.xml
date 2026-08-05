@@ -15,11 +15,10 @@
                     invisible="not approval_required or approval_state == 'approved' or state not in ('draft', 'sent')"
                 />
                 <button
-                    name="action_reject_fnb"
+                    name="action_open_rejection_wizard"
                     type="object"
                     string="Reject F&amp;B"
                     groups="fnb_core.group_fnb_purchase_approver"
-                    context="{'fnb_rejection_reason': 'Rejected by approver'}"
                     invisible="not approval_required or state not in ('draft', 'sent')"
                 />
             </xpath>
