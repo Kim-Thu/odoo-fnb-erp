@@ -71,7 +71,7 @@ jobs:
         run: python -m compileall addons
 
       - name: Lint Python
-        run: ruff check addons
+        run: ruff check addons --extend-per-file-ignores "*/__init__.py:F401"
 
       - name: Validate manifest syntax
         run: |
