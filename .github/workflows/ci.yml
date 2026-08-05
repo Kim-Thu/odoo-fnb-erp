@@ -60,13 +60,13 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
-          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)(\([a-z0-9-]+\))?: [a-z0-9].+$'
+          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)(\((T[0-9]{4}|[a-z0-9-]+)\))?: [a-z0-9].+$'
           invalid=0
 
           while IFS= read -r subject; do
             if [[ ! "$subject" =~ $pattern ]]; then
               echo "Invalid commit subject: $subject"
-              echo "Expected: <type>(optional-scope): <lowercase summary>"
+              echo "Expected: <type>(T0000-or-lowercase-scope): <lowercase summary>"
               invalid=1
             fi
           done < <(git log --format=%s "$BASE_SHA..$HEAD_SHA")
