@@ -122,6 +122,29 @@ jobs:
                   raise SystemExit(f"{manifest}: unsupported license")
           PY
 
+      - name: Validate Odoo XML syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+
+          xml_files = sorted(Path("addons").glob("**/*.xml"))
+          if not xml_files:
+              raise SystemExit("No XML files found under addons")
+
+          failures = []
+          for xml_file in xml_files:
+              try:
+                  ElementTree.parse(xml_file)
+              except ElementTree.ParseError as exc:
+                  failures.append(f"{xml_file}: {exc}")
+
+          if failures:
+              raise SystemExit("Malformed XML files:\n" + "\n".join(failures))
+
+          print(f"Validated {len(xml_files)} XML files")
+          PY
+
       - name: Ensure sensitive files are not tracked
         shell: bash
         run: |
