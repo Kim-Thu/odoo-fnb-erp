@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+    branches: [master, "feat/**"]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install linters
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff==0.12.7
+
+      - name: Compile Python sources
+        run: python -m compileall addons
+
+      - name: Lint Python
+        run: ruff check addons
+
+      - name: Validate manifest syntax
+        run: python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          manifests = list(Path("addons").glob("*/__manifest__.py"))
+          if not manifests:
+              raise SystemExit("No Odoo manifests found")
+
+          for manifest in manifests:
+              data = ast.literal_eval(manifest.read_text(encoding="utf-8"))
+              required = {"name", "version", "depends", "license"}
+              missing = required.difference(data)
+              if missing:
+                  raise SystemExit(f"{manifest}: missing {sorted(missing)}")
+              if data.get("license") not in {"LGPL-3", "AGPL-3", "OEEL-1"}:
+                  raise SystemExit(f"{manifest}: unsupported license")
+          PY
+
+      - name: Ensure sensitive files are not tracked
+        run: |
+          test ! -f .env
+          ! git ls-files | grep -E '(^|/)(odoo\.conf|.*\.(pem|key|p12|pfx)|\.env)$'
+
+      - name: Scan repository for likely secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  odoo-tests:
+    runs-on: ubuntu-latest
+    needs: static-checks
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: ci-only-password
+        options: >-
+          --health-cmd "pg_isready -U odoo -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Odoo module tests
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$PWD/addons:/mnt/extra-addons:ro" \
+            odoo:18.0 \
+            odoo \
+            --db_host=127.0.0.1 \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=ci-only-password \
+            --database=odoo_ci \
+            --init=fnb_core \
+            --test-enable \
+            --stop-after-init \
+            --without-demo=all \
+            --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
+            --log-level=test
+
+      - name: Upload Odoo logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: odoo-test-debug
+          path: |
+            .
+          retention-days: 3

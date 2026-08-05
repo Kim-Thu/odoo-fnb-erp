@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_product_template_form_fnb_core" model="ir.ui.view">
+        <field name="name">product.template.form.fnb.core</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/notebook" position="inside">
+                <page string="F&amp;B Operations" name="fnb_operations">
+                    <group>
+                        <group>
+                            <field name="fnb_internal_sku"/>
+                            <field name="fnb_ingredient_classification"/>
+                        </group>
+                        <group>
+                            <field name="fnb_storage_condition"/>
+                            <field name="fnb_shelf_life_days"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
