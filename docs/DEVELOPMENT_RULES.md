@@ -18,10 +18,10 @@ Do not combine unrelated features, fixes, refactors, and maintenance work in the
 
 ## 2. Branch naming
 
-Format:
+Canonical format:
 
 ```text
-<type>/<task-number>-<short-name>-<yyyymmdd-hhmm>
+<type>/T<4-digit-task-id>-<short-name>-<yyyyMMdd-HHmm>
 ```
 
 Allowed prefixes:
@@ -34,18 +34,28 @@ Allowed prefixes:
 - `ci/` — CI/CD changes.
 - `maint/` — dependency, tooling, housekeeping, or operational maintenance.
 - `security/` — security hardening or vulnerability remediation.
+- `performance/` — performance-only changes with measured evidence.
 
 Examples:
 
 ```text
-feat/002-inventory-lot-expiry-20260806-1430
-fix/014-purchase-approval-reset-20260806-1515
-ci/003-odoo-integration-tests-20260806-1600
-security/021-api-company-scope-20260806-1645
+feat/T3004-default-expiry-20260806-1430
+fix/T2011-purchase-approval-reset-20260806-1515
+ci/T0003-branch-name-validation-20260806-1600
+security/T7003-api-company-scope-20260806-1645
+```
+
+Validation regex:
+
+```regex
+^(feat|fix|refactor|test|docs|ci|maint|security|performance)/T[0-9]{4}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9]{8}-[0-9]{4}$
 ```
 
 Rules:
 
+- Task IDs always use uppercase `T` followed by exactly four digits.
+- Short names use lowercase kebab-case only.
+- Timestamp uses local project time in `yyyyMMdd-HHmm` format.
 - One task per branch.
 - Branch from the latest accepted base branch.
 - Never continue a different task on an existing feature branch.
@@ -86,37 +96,6 @@ Rules checked:
 - No secrets or real personal/business data.
 - Multi-company scope checked where relevant.
 - Error messages do not expose sensitive internals.
-```
-
-Example:
-
-```text
-feat(inventory): enforce lot and expiry on inbound receipts
-
-Changes:
-- Added traceability flag on product templates.
-- Blocked inbound validation when lot or expiry is missing.
-- Added tests for missing lot, missing expiry, and valid receipt.
-
-Reason:
-- F&B materials require traceability and expiry control before stock is accepted.
-
-Security:
-- Validation runs through standard ORM and stock workflows.
-- No sudo(), raw SQL, or ACL bypass.
-- Company ownership remains enforced by standard Odoo rules.
-
-Tests:
-- test_receipt_requires_lot
-- test_receipt_requires_expiry
-- test_valid_receipt_passes
-- docker compose run --rm odoo-test
-
-Rules checked:
-- No sudo().
-- No raw SQL.
-- No secret or production data.
-- Multi-company behavior reviewed.
 ```
 
 ## 4. Pull request requirements
