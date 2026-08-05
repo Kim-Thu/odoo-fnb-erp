@@ -12,7 +12,11 @@ Execution order is defined in `MASTER_TASK_PLAN.md`.
 
 Each task must use one branch:
 
-`<type>/<task-id>-<short-name>-<YYYYMMDD-HHmm>`
+`<type>/T<4-digit-task-id>-<short-name>-<yyyyMMdd-HHmm>`
+
+Example:
+
+`feat/T3004-default-expiry-20260806-1430`
 
 Before implementation:
 
