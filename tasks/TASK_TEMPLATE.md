@@ -7,7 +7,7 @@
 - Status: `todo`
 - Depends on: `<task IDs or none>`
 - Source requirements: `<BRD/SRS/PLAN references>`
-- Branch: `<type>/<task-id>-<short-name>-<YYYYMMDD-HHmm>`
+- Branch: `<type>/T<4-digit-task-id>-<short-name>-<yyyyMMdd-HHmm>`
 
 ## Goal
 
@@ -53,7 +53,7 @@ One measurable outcome only.
 - [ ] Required tests pass locally or in CI.
 - [ ] CI passes.
 - [ ] Documentation is updated.
-- [ ] Commit message contains Added/Changed/Fixed/Tests/Security sections.
+- [ ] Commit message contains Changes/Reason/Security/Tests/Rules checked sections.
 - [ ] Task evidence is recorded below.
 
 ## Evidence
