@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [master, "feat/**"]
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile Python sources
+        run: python -m compileall addons
+
+      - name: Validate manifest syntax
+        run: python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          manifests = list(Path("addons").glob("*/__manifest__.py"))
+          if not manifests:
+              raise SystemExit("No Odoo manifests found")
+
+          for manifest in manifests:
+              data = ast.literal_eval(manifest.read_text(encoding="utf-8"))
+              required = {"name", "version", "depends", "license"}
+              missing = required.difference(data)
+              if missing:
+                  raise SystemExit(f"{manifest}: missing {sorted(missing)}")
+              if data.get("license") not in {"LGPL-3", "AGPL-3", "OEEL-1"}:
+                  raise SystemExit(f"{manifest}: unsupported license")
+          PY
+
+      - name: Ensure secrets are not tracked
+        run: |
+          test ! -f .env
+          ! git ls-files | grep -E '(^|/)(odoo\.conf|.*\.(pem|key)|\.env)$'
