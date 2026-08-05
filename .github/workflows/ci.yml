@@ -44,12 +44,42 @@ jobs:
 
           echo "Valid branch name: $branch_name"
 
+  commit-message:
+    name: commit-message
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate PR commit subjects
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)(\((T[0-9]{4}|[a-z0-9-]+)\))?: [a-z0-9].+$'
+          invalid=0
+
+          while IFS= read -r subject; do
+            if [[ ! "$subject" =~ $pattern ]]; then
+              echo "Invalid commit subject: $subject"
+              echo "Expected: <type>(T0000-or-lowercase-scope): <lowercase summary>"
+              invalid=1
+            fi
+          done < <(git log --format=%s "$BASE_SHA..$HEAD_SHA")
+
+          exit "$invalid"
+
   static-checks:
     name: static-checks
     runs-on: ubuntu-latest
     needs:
       - branch-name
-    if: ${{ always() && (needs.branch-name.result == 'success' || needs.branch-name.result == 'skipped') }}
+      - commit-message
+    if: ${{ always() && (needs.branch-name.result == 'success' || needs.branch-name.result == 'skipped') && (needs.commit-message.result == 'success' || needs.commit-message.result == 'skipped') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
