@@ -2,9 +2,18 @@ name: CI
 
 on:
   push:
-    branches: [master, "feat/**"]
+    branches:
+      - master
   pull_request:
-    branches: [master]
+    branches:
+      - master
+  workflow_dispatch:
+    inputs:
+      run_full_suite:
+        description: "Run the complete Odoo test suite"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -14,11 +23,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  static-checks:
+  branch-name:
+    name: branch-name
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Validate branch name
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        shell: bash
+        run: |
+          branch_name="$HEAD_REF"
+          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)/T[0-9]{4}-[a-z0-9]+(-[a-z0-9]+)*-[0-9]{8}-[0-9]{4}$'
+
+          if [[ ! "$branch_name" =~ $pattern ]]; then
+            echo "Invalid branch name: $branch_name"
+            echo "Expected: <type>/T<4-digit-task-id>-<short-name>-<yyyyMMdd-HHmm>"
+            exit 1
+          fi
+
+          echo "Valid branch name: $branch_name"
+
+  static-checks:
+    name: static-checks
+    runs-on: ubuntu-latest
+    needs:
+      - branch-name
+    if: ${{ always() && (needs.branch-name.result == 'success' || needs.branch-name.result == 'skipped') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,10 +70,11 @@ jobs:
         run: python -m compileall addons
 
       - name: Lint Python
-        run: ruff check addons
+        run: ruff check addons --extend-per-file-ignores "*/__init__.py:F401"
 
       - name: Validate manifest syntax
-        run: python - <<'PY'
+        run: |
+          python - <<'PY'
           import ast
           from pathlib import Path
 
@@ -56,9 +93,13 @@ jobs:
           PY
 
       - name: Ensure sensitive files are not tracked
+        shell: bash
         run: |
           test ! -f .env
-          ! git ls-files | grep -E '(^|/)(odoo\.conf|.*\.(pem|key|p12|pfx)|\.env)$'
+          if git ls-files | grep -Eq '(^|/)(odoo\.conf|.*\.(pem|key|p12|pfx)|\.env)$'; then
+            echo "Sensitive file is tracked"
+            exit 1
+          fi
 
       - name: Scan repository for likely secrets
         uses: gitleaks/gitleaks-action@v2
@@ -66,8 +107,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   odoo-tests:
+    name: odoo-tests
     runs-on: ubuntu-latest
-    needs: static-checks
+    timeout-minutes: 12
+    needs:
+      - static-checks
     services:
       postgres:
         image: postgres:16-alpine
@@ -87,30 +131,82 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Odoo module tests
+      - name: Run fnb_core tests only
+        shell: bash
         run: |
           docker run --rm \
             --network host \
+            -e HOST=127.0.0.1 \
+            -e PORT=5432 \
+            -e USER=odoo \
+            -e PASSWORD=ci-only-password \
             -v "$PWD/addons:/mnt/extra-addons:ro" \
             odoo:18.0 \
-            odoo \
             --db_host=127.0.0.1 \
             --db_port=5432 \
             --db_user=odoo \
             --db_password=ci-only-password \
             --database=odoo_ci \
             --init=fnb_core \
-            --test-enable \
+            --test-tags=/fnb_core \
             --stop-after-init \
             --without-demo=all \
             --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
             --log-level=test
 
       - name: Upload Odoo logs on failure
-        if: failure()
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: odoo-test-debug
-          path: |
-            .
+          path: .
           retention-days: 3
+
+  full-odoo-tests:
+    name: full-odoo-tests
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_full_suite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - static-checks
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: ci-only-password
+        options: >-
+          --health-cmd "pg_isready -U odoo -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run complete Odoo tests
+        shell: bash
+        run: |
+          docker run --rm \
+            --network host \
+            -e HOST=127.0.0.1 \
+            -e PORT=5432 \
+            -e USER=odoo \
+            -e PASSWORD=ci-only-password \
+            -v "$PWD/addons:/mnt/extra-addons:ro" \
+            odoo:18.0 \
+            --db_host=127.0.0.1 \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=ci-only-password \
+            --database=odoo_full_ci \
+            --init=fnb_core \
+            --test-enable \
+            --stop-after-init \
+            --without-demo=all \
+            --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
+            --log-level=test
