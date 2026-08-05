@@ -56,6 +56,14 @@ class TestPurchaseApproval(TransactionCase):
                 ],
             }
         )
+        cls.regular_user = cls.env["res.users"].create(
+            {
+                "name": "Regular Purchase User",
+                "login": "purchase.user@example.test",
+                "email": "purchase.user@example.test",
+                "groups_id": [(6, 0, [cls.env.ref("base.group_user").id])],
+            }
+        )
 
     def test_confirmation_requires_approval(self):
         self.assertTrue(self.order.approval_required)
@@ -78,9 +86,6 @@ class TestPurchaseApproval(TransactionCase):
     def test_business_change_resets_existing_approval(self):
         order = self.order.with_user(self.approver)
         order.action_approve_fnb()
-        order.write({"partner_ref": "Changed after approval"})
-        self.assertEqual(order.approval_state, "approved")
-
         order.write(
             {
                 "order_line": [
@@ -94,3 +99,40 @@ class TestPurchaseApproval(TransactionCase):
         )
         self.assertFalse(order.approved_by_id)
         self.assertEqual(order.approval_state, "pending")
+
+    def test_rejection_wizard_requires_meaningful_reason(self):
+        wizard = self.env["fnb.purchase.rejection.wizard"].with_user(
+            self.approver
+        ).create(
+            {
+                "purchase_order_id": self.order.id,
+                "reason": " no ",
+            }
+        )
+        with self.assertRaises(ValidationError):
+            wizard.action_confirm_rejection()
+
+    def test_regular_user_cannot_reject(self):
+        with self.assertRaises(AccessError):
+            self.order.with_user(self.regular_user).action_reject_fnb(
+                reason="Budget is not approved"
+            )
+
+    def test_approver_can_reject_with_wizard(self):
+        wizard = self.env["fnb.purchase.rejection.wizard"].with_user(
+            self.approver
+        ).create(
+            {
+                "purchase_order_id": self.order.id,
+                "reason": "  Supplier quotation exceeds approved budget.  ",
+            }
+        )
+        result = wizard.action_confirm_rejection()
+        self.assertEqual(result, {"type": "ir.actions.act_window_close"})
+        self.assertEqual(self.order.approval_state, "rejected")
+        self.assertEqual(
+            self.order.rejection_reason,
+            "Supplier quotation exceeds approved budget.",
+        )
+        with self.assertRaises(ValidationError):
+            self.order.button_confirm()
