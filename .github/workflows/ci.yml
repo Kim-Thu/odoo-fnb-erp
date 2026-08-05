@@ -4,18 +4,16 @@ on:
   push:
     branches:
       - master
-      - "feat/**"
-      - "fix/**"
-      - "refactor/**"
-      - "test/**"
-      - "docs/**"
-      - "ci/**"
-      - "maint/**"
-      - "security/**"
-      - "performance/**"
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      run_full_suite:
+        description: "Run the complete Odoo test suite"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -28,15 +26,14 @@ jobs:
   branch-name:
     name: branch-name
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name != 'master' }}
+    if: ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Validate branch name
         env:
           HEAD_REF: ${{ github.head_ref }}
-          REF_NAME: ${{ github.ref_name }}
         shell: bash
         run: |
-          branch_name="${HEAD_REF:-$REF_NAME}"
+          branch_name="$HEAD_REF"
           pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)/T[0-9]{4}-[a-z0-9]+(-[a-z0-9]+)*-[0-9]{8}-[0-9]{4}$'
 
           if [[ ! "$branch_name" =~ $pattern ]]; then
@@ -112,6 +109,7 @@ jobs:
   odoo-tests:
     name: odoo-tests
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     needs:
       - static-checks
     services:
@@ -133,7 +131,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Run Odoo module tests
+      - name: Run fnb_core tests only
         shell: bash
         run: |
           docker run --rm \
@@ -150,7 +148,7 @@ jobs:
             --db_password=ci-only-password \
             --database=odoo_ci \
             --init=fnb_core \
-            --test-enable \
+            --test-tags=/fnb_core \
             --stop-after-init \
             --without-demo=all \
             --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
@@ -163,3 +161,52 @@ jobs:
           name: odoo-test-debug
           path: .
           retention-days: 3
+
+  full-odoo-tests:
+    name: full-odoo-tests
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_full_suite }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs:
+      - static-checks
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: ci-only-password
+        options: >-
+          --health-cmd "pg_isready -U odoo -d postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run complete Odoo tests
+        shell: bash
+        run: |
+          docker run --rm \
+            --network host \
+            -e HOST=127.0.0.1 \
+            -e PORT=5432 \
+            -e USER=odoo \
+            -e PASSWORD=ci-only-password \
+            -v "$PWD/addons:/mnt/extra-addons:ro" \
+            odoo:18.0 \
+            --db_host=127.0.0.1 \
+            --db_port=5432 \
+            --db_user=odoo \
+            --db_password=ci-only-password \
+            --database=odoo_full_ci \
+            --init=fnb_core \
+            --test-enable \
+            --stop-after-init \
+            --without-demo=all \
+            --addons-path=/mnt/extra-addons,/usr/lib/python3/dist-packages/odoo/addons \
+            --log-level=test
