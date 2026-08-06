@@ -159,6 +159,41 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  vulnerability-scan:
+    name: vulnerability-scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    needs:
+      - static-checks
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Scan repository dependencies and configuration
+        shell: bash
+        run: |
+          docker run --rm \
+            -v "$PWD:/workspace:ro" \
+            aquasec/trivy:0.58.2 \
+            fs /workspace \
+            --scanners vuln,misconfig \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --no-progress
+
+      - name: Scan Odoo runtime image
+        shell: bash
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.58.2 \
+            image odoo:18.0 \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --no-progress
+
   odoo-tests:
     name: odoo-tests
     runs-on: ubuntu-latest
