@@ -5,7 +5,8 @@
 - Epic: Repository and delivery foundation
 - Status: `review`
 - Depends on: `T0001`
-- Branch: `maint/T0002-standardize-branch-format-20260806-0528`
+- Dependencies ready: `yes — T0001 is marked done in MASTER_TASK_PLAN.md`
+- Branch: `maint/T0002-finalize-task-template-20260806-0841`
 
 ## Goal
 Standardize the reusable task template and canonical branch naming format before automated task execution.
@@ -32,8 +33,10 @@ Standardize the reusable task template and canonical branch naming format before
 - [x] Task moves to review.
 
 ## Evidence
-- Commit: `3477aceb01febc1a77b9ba789f3944e272590d50`
+- Commit: `0127ee969b18d97459fc3649f167b1adf8109bdc`
 - Pull request: pending
 - CI run: pending
 - Test commands: manual regex and document consistency review
+- Dependency evidence: T0001 is marked done in MASTER_TASK_PLAN.md
+- Review notes: branch recreated from current master to avoid stale-history changes
 - Notes: runtime code was not changed.

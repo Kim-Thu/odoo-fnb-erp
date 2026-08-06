@@ -6,6 +6,7 @@
 - Epic: `<epic name>`
 - Status: `todo`
 - Depends on: `<task IDs or none>`
+- Dependencies ready: `<yes|no with evidence>`
 - Source requirements: `<BRD/SRS/PLAN references>`
 - Branch: `<type>/T<4-digit-task-id>-<short-name>-<yyyyMMdd-HHmm>`
 
@@ -54,6 +55,7 @@ One measurable outcome only.
 - [ ] CI passes.
 - [ ] Documentation is updated.
 - [ ] Commit message contains Changes/Reason/Security/Tests/Rules checked sections.
+- [ ] Task file is moved to `tasks/review/` before opening the PR.
 - [ ] Task evidence is recorded below.
 
 ## Evidence
@@ -62,4 +64,6 @@ One measurable outcome only.
 - Pull request:
 - CI run:
 - Test commands:
+- Dependency evidence:
+- Review notes:
 - Notes:
