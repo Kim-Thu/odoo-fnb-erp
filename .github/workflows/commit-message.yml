@@ -34,7 +34,7 @@ jobs:
               r"\(T[0-9]{4}\): [a-z0-9].+$"
           )
           section_pattern = re.compile(
-              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.+?)(?=^## |\Z)"
+              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.*?)(?=^## |\Z)"
           )
 
           def git(*args: str) -> str:
@@ -61,8 +61,8 @@ jobs:
                   for name, value in section_pattern.findall(body)
               }
 
-              if not any(name in sections for name in ("Added", "Changed", "Fixed")):
-                  failures.append(f"{commit[:12]}: missing Added, Changed or Fixed section")
+              if not any(sections.get(name) for name in ("Added", "Changed", "Fixed")):
+                  failures.append(f"{commit[:12]}: missing or empty Added, Changed or Fixed section")
 
               for required in ("Tests", "Security"):
                   if not sections.get(required):
@@ -89,7 +89,7 @@ jobs:
               r"\(T[0-9]{4}\): [a-z0-9].+$"
           )
           section_pattern = re.compile(
-              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.+?)(?=^## |\Z)"
+              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.*?)(?=^## |\Z)"
           )
 
           def valid(subject: str, body: str) -> bool:
@@ -100,7 +100,7 @@ jobs:
                   for name, value in section_pattern.findall(body)
               }
               return (
-                  any(name in sections for name in ("Added", "Changed", "Fixed"))
+                  any(sections.get(name) for name in ("Added", "Changed", "Fixed"))
                   and bool(sections.get("Tests"))
                   and bool(sections.get("Security"))
               )
