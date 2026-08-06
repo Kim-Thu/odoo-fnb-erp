@@ -28,9 +28,9 @@ Every code task must include:
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
 | T0001 | maint | Add task-state directory workflow | — | done |
-| T0002 | docs | Add reusable task template | T0001 | todo |
-| T0003 | ci | Validate branch-name format in CI | T0002 | todo |
-| T0004 | ci | Validate commit-message sections in CI | T0002 | todo |
+| T0002 | docs | Add reusable task template | T0001 | done |
+| T0003 | ci | Validate branch-name format in CI | T0002 | done |
+| T0004 | ci | Validate commit-message sections in CI | T0002 | review |
 | T0005 | ci | Add Ruff configuration and lint command | — | todo |
 | T0006 | ci | Add XML validation for Odoo views | T0005 | todo |
 | T0007 | security | Add Gitleaks configuration | — | todo |
