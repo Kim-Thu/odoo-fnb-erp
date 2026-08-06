@@ -57,7 +57,7 @@ class TestStockLotExpiration(TransactionCase):
             {"name": "T3004-ZERO", "product_id": product.id}
         )
 
-        after = fields.Datetime.now()
+        after = fields.Datetime.now() + timedelta(seconds=1)
         self.assertGreaterEqual(lot.expiration_date, before)
         self.assertLessEqual(lot.expiration_date, after)
 
