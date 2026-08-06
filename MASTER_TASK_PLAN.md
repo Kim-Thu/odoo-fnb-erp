@@ -53,8 +53,8 @@ Every code task must include:
 | T1004 | feat | Add traceability-required flag | T1003 | done |
 | T1005 | fix | Validate shelf life is non-negative | T1003 | done |
 | T1006 | feat | Enforce F&B SKU uniqueness by company | T1001 | done |
-| T1007 | test | Test SKU uniqueness in same company | T1006 | todo |
-| T1008 | test | Test same SKU across different companies | T1006 | todo |
+| T1007 | test | Test SKU uniqueness in same company | T1006 | done |
+| T1008 | test | Test same SKU across different companies | T1006 | review |
 | T1009 | test | Test negative shelf-life rejection | T1005 | todo |
 | T1010 | docs | Add product import template and field guide | T1004 | todo |
 
@@ -86,7 +86,7 @@ Every code task must include:
 | T3001 | feat | Add `product_expiry` dependency | T0010 | done |
 | T3002 | feat | Synchronize traceability flag to lot tracking | T1004,T3001 | done |
 | T3003 | feat | Enable expiration handling for traceable products | T3002 | done |
-| T3004 | feat | Derive default expiration from shelf life | T3003 | todo |
+| T3004 | feat | Derive default expiration from shelf life | T3003 | done |
 | T3005 | feat | Detect inbound moves requiring lot data | T3002 | done |
 | T3006 | feat | Block receipt validation when lot is missing | T3005 | done |
 | T3007 | feat | Block receipt validation when expiration is missing | T3005 | done |
