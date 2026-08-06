@@ -1,0 +1,121 @@
+name: Commit message
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-commit-messages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate pull request commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$BASE_SHA" "$HEAD_SHA" <<'PY'
+          import re
+          import subprocess
+          import sys
+
+          base_sha, head_sha = sys.argv[1:3]
+          subject_pattern = re.compile(
+              r"^(feat|fix|refactor|test|docs|ci|maint|security|performance)"
+              r"\(T[0-9]{4}\): [a-z0-9].+$"
+          )
+          section_pattern = re.compile(
+              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.+?)(?=^## |\Z)"
+          )
+
+          def git(*args: str) -> str:
+              return subprocess.check_output(
+                  ["git", *args], text=True, encoding="utf-8"
+              ).strip()
+
+          commits = git("rev-list", "--no-merges", f"{base_sha}..{head_sha}").splitlines()
+          failures: list[str] = []
+
+          for commit in commits:
+              subject = git("show", "-s", "--format=%s", commit)
+              body = git("show", "-s", "--format=%b", commit)
+
+              if subject.startswith("chore(release):"):
+                  continue
+
+              if not subject_pattern.fullmatch(subject):
+                  failures.append(f"{commit[:12]}: invalid subject")
+                  continue
+
+              sections = {
+                  name: value.strip()
+                  for name, value in section_pattern.findall(body)
+              }
+
+              if not any(name in sections for name in ("Added", "Changed", "Fixed")):
+                  failures.append(f"{commit[:12]}: missing Added, Changed or Fixed section")
+
+              for required in ("Tests", "Security"):
+                  if not sections.get(required):
+                      failures.append(f"{commit[:12]}: missing or empty {required} section")
+
+          if failures:
+              print("Commit message validation failed:")
+              for failure in failures:
+                  print(f"- {failure}")
+              raise SystemExit(1)
+
+          print(f"Validated {len(commits)} non-merge commit(s).")
+          PY
+
+      - name: Test validator examples
+        shell: bash
+        run: |
+          set -euo pipefail
+          python <<'PY'
+          import re
+
+          subject_pattern = re.compile(
+              r"^(feat|fix|refactor|test|docs|ci|maint|security|performance)"
+              r"\(T[0-9]{4}\): [a-z0-9].+$"
+          )
+          section_pattern = re.compile(
+              r"(?ms)^## (Added|Changed|Fixed|Tests|Security)\n(.+?)(?=^## |\Z)"
+          )
+
+          def valid(subject: str, body: str) -> bool:
+              if not subject_pattern.fullmatch(subject):
+                  return False
+              sections = {
+                  name: value.strip()
+                  for name, value in section_pattern.findall(body)
+              }
+              return (
+                  any(name in sections for name in ("Added", "Changed", "Fixed"))
+                  and bool(sections.get("Tests"))
+                  and bool(sections.get("Security"))
+              )
+
+          good = """## Added
+          Add validation.
+          ## Tests
+          Valid and invalid examples.
+          ## Security
+          Commit text is processed as plain data.
+          """
+          assert valid("ci(T0004): validate commit messages", good)
+          assert not valid("ci(T0004): validate commit messages", "## Added\nAdd validation.\n## Security\nSafe.")
+          assert not valid("ci(T0004): validate commit messages", "## Added\nAdd validation.\n## Tests\nCovered.")
+          assert not valid("ci(T0004): validate commit messages", "## Added\n\n## Tests\nCovered.\n## Security\nSafe.")
+          assert not valid("ci: validate commit messages", good)
+          print("Validator examples passed.")
+          PY
