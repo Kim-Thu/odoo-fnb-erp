@@ -1,0 +1,62 @@
+name: Branch name
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-branch-name:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate pull request branch name
+        shell: bash
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+
+          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)/T[0-9]{4}-[a-z0-9]+(-[a-z0-9]+)*-[0-9]{8}-[0-9]{4}$'
+
+          if [[ ! "$BRANCH_NAME" =~ $pattern ]]; then
+            echo "Invalid branch name: $BRANCH_NAME"
+            echo "Expected: <type>/T<4 digits>-<lowercase-kebab-name>-<yyyyMMdd-HHmm>"
+            exit 1
+          fi
+
+          echo "Valid branch name: $BRANCH_NAME"
+
+      - name: Test validator examples
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pattern='^(feat|fix|refactor|test|docs|ci|maint|security|performance)/T[0-9]{4}-[a-z0-9]+(-[a-z0-9]+)*-[0-9]{8}-[0-9]{4}$'
+
+          valid=(
+            'feat/T3004-default-expiry-20260806-0600'
+            'ci/T0003-branch-name-check-20260806-0856'
+          )
+
+          invalid=(
+            'unknown/T0003-branch-name-check-20260806-0856'
+            'ci/branch-name-check-20260806-0856'
+            'ci/T0003-branch-name-check'
+            'ci/T0003-Branch-Name-20260806-0856'
+          )
+
+          for branch in "${valid[@]}"; do
+            [[ "$branch" =~ $pattern ]] || {
+              echo "Expected valid branch to pass: $branch"
+              exit 1
+            }
+          done
+
+          for branch in "${invalid[@]}"; do
+            if [[ "$branch" =~ $pattern ]]; then
+              echo "Expected invalid branch to fail: $branch"
+              exit 1
+            fi
+          done
