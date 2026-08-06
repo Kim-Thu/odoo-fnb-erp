@@ -1,0 +1,13 @@
+title = "odoo-fnb-erp gitleaks configuration"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allow known non-secret CI placeholders only"
+paths = [
+  '''^\.gitleaks\.toml$''',
+]
+regexes = [
+  '''ci-only-password''',
+]
