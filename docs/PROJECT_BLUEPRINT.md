@@ -1,96 +1,135 @@
-# Project Blueprint
+# Bản thiết kế tổng thể dự án
 
-## Purpose
+## Mục đích
 
-This document is the implementation map between the BRD, SRS, Odoo standard capabilities, custom modules, data flows, security boundaries, test coverage, and release phases.
+Tài liệu này là bản đồ triển khai giữa BRD, SRS, năng lực chuẩn của Odoo, các module custom, luồng dữ liệu, ranh giới bảo mật, phạm vi kiểm thử và các phase phát triển.
 
-## System context
+Mục tiêu chính là giúp người phát triển và người đọc dự án trả lời rõ các câu hỏi:
 
-The project delivers an Odoo-based ERP for an F&B business. Odoo standard behavior is preferred first; customization is introduced only when the BRD/SRS cannot be met safely or clearly with configuration.
+- Dự án đang giải quyết bài toán nghiệp vụ nào?
+- Requirement nào được đáp ứng bằng Odoo chuẩn, requirement nào cần custom?
+- Dữ liệu đi qua những model nào?
+- Luồng end-to-end chạy như thế nào?
+- Điểm nào cần phân quyền, audit và kiểm thử multi-company?
+- Phase nào phải hoàn thành trước khi mở phase tiếp theo?
 
-## Phase model
+## Nguyên tắc kiến trúc
 
-| Phase | Scope | Exit gate |
+Dự án xây dựng ERP cho doanh nghiệp F&B trên Odoo. Luôn ưu tiên **Standard First**: dùng cấu hình và hành vi chuẩn của Odoo trước, chỉ custom khi BRD/SRS không thể được đáp ứng rõ ràng, an toàn hoặc đủ sâu bằng cấu hình chuẩn.
+
+Các nguyên tắc bắt buộc:
+
+- Không viết lại tính năng chuẩn chỉ để tạo code custom.
+- Dữ liệu thuộc công ty phải được giới hạn theo company scope.
+- Không dùng `sudo()` để làm biến mất lỗi quyền.
+- Raw SQL chỉ được dùng khi ORM thực sự không đáp ứng và phải có giải trình.
+- Mọi integration phải có authentication, validation, company scope và log an toàn.
+- Demo/test data phải là dữ liệu giả lập.
+
+## Mô hình phase
+
+| Phase | Phạm vi | Điều kiện hoàn thành phase |
 |---|---|---|
-| P0 | Repository, CI/CD, security foundation | Reliable branch/commit validation, lint, tests, container build |
-| P1 | Master data and shared configuration | Product/UoM/partner/warehouse foundations usable |
-| P2 | Purchase and Procure-to-Stock | RFQ/PO approval, receipt traceability, vendor linkage |
-| P3 | Inventory lot, expiry and FEFO | Lot/expiry enforcement and expired-stock governance |
-| P4 | Inventory operations | Count approval, reordering, barcode, internal transfer |
-| P5 | Manufacturing | BOM, MO, work orders, lot traceability, costing |
-| P6 | Quality | QCP, alerts, blocking rules, corrective action |
-| P7 | Sales and returns | Quotation/SO, delivery, return quarantine, invoicing handoff |
-| P8 | POS and accounting basic | POS session/order/return and invoice/payment baseline |
-| P9 | Approval and audit | Sensitive action approval + auditable changes |
-| P10 | API and integration | Authenticated company-safe APIs, idempotency, webhook/retry |
-| P11 | Dashboard and analytics | Operational KPIs with tested company isolation |
-| P12 | Demo data and end-to-end UAT | Representative data and P2S/P2P-MRP/O2C/POS flows pass |
-| P13 | Hardening and release | Security review, staging, backup/restore, RC and release docs |
+| P0 | Repository, CI/CD, nền tảng security | Branch/commit validation, lint, test và container build ổn định |
+| P1 | Master data và cấu hình dùng chung | Product, UoM, partner và warehouse foundation sử dụng được |
+| P2 | Purchase và Procure-to-Stock | RFQ/PO, approval, receipt traceability và vendor linkage chạy được |
+| P3 | Inventory lot, expiry, FEFO và reporting | Quản lý lot/expiry và chính sách hàng hết hạn hoàn chỉnh |
+| P4 | Inventory operations | Inventory count approval, reordering, barcode, internal transfer chạy được |
+| P5 | Manufacturing | BOM, MO, work order, lot traceability và costing chạy được |
+| P6 | Quality | QCP, alert, blocking rule và corrective action chạy được |
+| P7 | Sales và returns | Quotation/SO, delivery, return quarantine và invoice handoff chạy được |
+| P8 | POS và accounting cơ bản | POS session/order/return và invoice/payment baseline chạy được |
+| P9 | Approval và audit | Các thao tác nhạy cảm có approval/audit phù hợp |
+| P10 | API và integration | API có auth, company scope, idempotency, webhook/retry |
+| P11 | Dashboard và analytics | KPI vận hành đúng dữ liệu và company isolation |
+| P12 | Demo data và end-to-end UAT | Dữ liệu mẫu đầy đủ, các luồng P2S/P2P-MRP/O2C/POS pass |
+| P13 | Hardening và release | Security review, staging, backup/restore, RC và release docs hoàn tất |
 
-## Core data model map
+## Bản đồ dữ liệu cốt lõi
 
-| Domain | Odoo standard model / table | Custom extension intent |
+| Domain | Odoo model/table chính | Ý định mở rộng custom |
 |---|---|---|
-| Product | `product.template`, `product.product` | F&B SKU, shelf life, storage condition, traceability flags |
-| UoM | `uom.uom`, `uom.category` | Prefer standard configuration; test valid/invalid conversion |
-| Partner | `res.partner` | Prefer standard customer/vendor/payment/tax data |
-| Company | `res.company` | Approval thresholds and company-owned configuration |
-| Warehouse | `stock.warehouse`, `stock.location` | Demo structure for Raw Materials, Production, Finished Goods |
-| Inventory | `stock.quant`, `stock.move`, `stock.picking` | Receipt validation, count approval, stock policies |
-| Lots | `stock.lot` | Default expiry and traceability rules |
+| Product | `product.template`, `product.product` | SKU F&B, shelf life, storage condition, traceability flag |
+| UoM | `uom.uom`, `uom.category` | Ưu tiên cấu hình chuẩn; test quy đổi hợp lệ và sai category |
+| Partner | `res.partner` | Dùng chuẩn cho customer/vendor/payment/tax data |
+| Company | `res.company` | Approval threshold và cấu hình theo công ty |
+| Warehouse | `stock.warehouse`, `stock.location` | Cấu hình demo Raw Materials, Production, Finished Goods |
+| Inventory | `stock.quant`, `stock.move`, `stock.picking` | Receipt validation, inventory-count approval, stock policy |
+| Lot | `stock.lot` | Default expiry và rule traceability |
 | Purchase | `purchase.order`, `purchase.order.line` | Approval state, audit metadata, rejection flow |
-| Manufacturing | `mrp.bom`, `mrp.production`, work-order models | Traceability and demo costing extensions as needed |
-| Quality | Quality-related Odoo models available in selected edition | QCP, alert, blocking behavior where standard is insufficient |
-| Sales | `sale.order`, `sale.order.line` | Return governance and integration endpoints |
-| POS | POS session/order models | Standard-first demo workflow |
-| Accounting | `account.move`, payment models | Basic invoice/payment demo integration only |
+| Manufacturing | `mrp.bom`, `mrp.production`, work-order models | Traceability và costing demo khi cần |
+| Quality | Các model Quality có trong edition sử dụng | QCP, alert và blocking behavior khi chuẩn chưa đủ |
+| Sales | `sale.order`, `sale.order.line` | Return governance và integration endpoint |
+| POS | POS session/order models | Luồng demo Standard First |
+| Accounting | `account.move`, payment models | Invoice/payment cơ bản phục vụ demo end-to-end |
 | Integration | Custom API/integration log models | Idempotency, retry state, dead-letter simulation, audit metadata |
-| Dashboard | ORM/report models | KPI aggregation and company-safe query definitions |
+| Dashboard | ORM/report models | KPI aggregation và query an toàn theo company |
 
-## Primary data flows
+## Luồng dữ liệu chính
 
-### Procure-to-Stock
+### 1. Procure-to-Stock
 
-Demand/reordering → RFQ → approval → PO → receipt → quality check → lot/expiry validation → stock → vendor bill linkage.
+Nhu cầu mua/reordering → RFQ → approval → PO → receipt → quality check → kiểm tra lot/expiry → nhập stock → liên kết vendor bill.
 
-### Plan-to-Produce
+Dữ liệu chính đi qua:
 
-Demand/reordering → MO → reserve ingredients → consume ingredient lots → work orders → quality → finished lot → stock → costing comparison.
+`product.template` → `purchase.order` / `purchase.order.line` → `stock.picking` / `stock.move` → `stock.lot` → `account.move`.
 
-### Order-to-Cash
+### 2. Plan-to-Produce
 
-Quotation → SO → availability/reservation → delivery → invoice → payment.
+Nhu cầu/reordering → MO → reserve nguyên liệu → consume ingredient lot → work order → quality → finished lot → nhập stock → so sánh planned/actual cost.
 
-### POS-to-Inventory
+Dữ liệu chính đi qua:
 
-POS session → POS order/payment → store stock deduction → return/refund if required → close session/reconcile.
+`mrp.bom` → `mrp.production` → stock moves/lots → work-order models → quality models → costing evidence.
 
-### Inventory adjustment
+### 3. Order-to-Cash
 
-Inventory count → actual quantity → variance calculation → threshold evaluation → approval if required → adjustment → audit log.
+Quotation → Sales Order → availability/reservation → delivery → invoice → payment.
 
-### Traceability
+Dữ liệu chính đi qua:
+
+`sale.order` / `sale.order.line` → `stock.picking` → `account.move` → payment models.
+
+### 4. POS-to-Inventory
+
+Mở POS session → POS order/payment → trừ tồn tại cửa hàng → return/refund nếu có → đóng session → đối soát.
+
+### 5. Inventory Adjustment
+
+Inventory count → nhập actual quantity → tính variance → kiểm tra threshold → approval nếu vượt ngưỡng → adjustment → audit log.
+
+### 6. Traceability nguyên liệu đến bán hàng
 
 Vendor/PO → receipt → ingredient lot → MO consumption → finished-product lot → delivery/POS sale → return/quarantine.
 
-### API and event flow
+Đây là một trong các luồng quan trọng nhất của hệ thống F&B và phải có evidence end-to-end trong phase UAT.
 
-External client → authentication → schema validation → company scope → service/ORM → response/audit. Business event → integration queue/log → retry policy → delivery or dead-letter state.
+### 7. API và event
 
-## Security boundaries
+External client → authentication → schema validation → company scope → service/ORM → response/audit.
 
-- Every company-owned record must be evaluated against allowed companies.
-- Warehouse-specific restrictions are added where BRD/SRS requires them.
-- No `sudo()` is used to bypass access failures.
-- APIs use explicit authentication, input allowlists and pagination bounds.
-- Idempotency keys are scoped to an authenticated integration/company context.
-- Sensitive payloads, credentials and personal data are not written to logs.
+Business event → integration queue/log → retry policy → delivery thành công hoặc dead-letter state.
 
-## Documentation set
+## Ranh giới bảo mật
 
-- `docs/BRD_Odoo_FnB_ERP.md` — business requirements.
-- `docs/SRS_Odoo_FnB_ERP.md` — software requirements.
-- `docs/PROJECT_BLUEPRINT.md` — phases, system context, data model and flows.
-- `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` — requirement-to-task mapping.
-- `docs/DEVELOPMENT_RULES.md` — execution and delivery rules.
-- Future implementation tasks add detailed architecture, ERD, API contract and UAT evidence when their phase is reached.
+- Mọi record thuộc company phải kiểm tra against allowed companies.
+- Warehouse restriction được bổ sung ở nơi BRD/SRS yêu cầu.
+- Không dùng `sudo()` để bypass permission failure.
+- API phải có authentication rõ ràng, input allowlist và pagination bound.
+- Idempotency key phải gắn với integration identity/company context.
+- Không ghi token, credential, payload nhạy cảm hoặc dữ liệu cá nhân vào log.
+- Approval/audit metadata phải được bảo vệ khỏi sửa trực tiếp khi cần.
+
+## Bộ tài liệu nguồn chuẩn
+
+Trong giai đoạn phát triển, **bản tiếng Việt là source of truth chính**. Tên model, field, API, task ID và thuật ngữ kỹ thuật có thể giữ tiếng Anh để tránh sai nghĩa kỹ thuật.
+
+- `docs/BRD_Odoo_FnB_ERP.md` — yêu cầu nghiệp vụ.
+- `docs/SRS_Odoo_FnB_ERP.md` — yêu cầu phần mềm.
+- `MASTER_TASK_PLAN.md` — roadmap phase/task và dependency.
+- `docs/PROJECT_BLUEPRINT.md` — phase, kiến trúc mức hệ thống, data model và data flow.
+- `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` — mapping requirement → task.
+- `docs/DEVELOPMENT_RULES.md` — quy tắc thực thi task/branch/PR/CI.
+
+Bản tiếng Anh sẽ được tạo sau khi nội dung dự án ổn định để phục vụ portfolio/public documentation, không duy trì song song trong giai đoạn implementation nhằm tránh lệch nội dung và tốn công cập nhật.
