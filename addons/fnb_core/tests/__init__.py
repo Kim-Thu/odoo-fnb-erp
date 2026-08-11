@@ -1,3 +1,4 @@
+from . import test_partner_master
 from . import test_product_shelf_life
 from . import test_product_sku_uniqueness
 from . import test_purchase_approval
