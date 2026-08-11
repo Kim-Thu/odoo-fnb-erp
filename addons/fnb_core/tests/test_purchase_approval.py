@@ -79,6 +79,16 @@ class TestPurchaseApproval(TransactionCase):
         order.button_confirm()
         self.assertEqual(order.state, "purchase")
 
+    def test_regular_user_cannot_approve(self):
+        order = self.order.with_user(self.regular_user)
+
+        with self.assertRaises(AccessError):
+            order.action_approve_fnb()
+
+        self.assertFalse(self.order.approved_by_id)
+        self.assertFalse(self.order.approved_at)
+        self.assertEqual(self.order.approval_state, "pending")
+
     def test_direct_audit_field_write_is_blocked(self):
         with self.assertRaises(AccessError):
             self.order.write({"approved_by_id": self.env.user.id})
