@@ -9,6 +9,7 @@
     "data": [
         "security/fnb_security.xml",
         "security/ir.model.access.csv",
+        "data/warehouse_demo.xml",
         "views/product_template_views.xml",
         "views/purchase_rejection_wizard_views.xml",
         "views/purchase_order_views.xml",
