@@ -1,0 +1,4 @@
+name,default_code,fnb_internal_sku,fnb_ingredient_classification,fnb_storage_condition,fnb_shelf_life_days,fnb_requires_traceability
+T1010 Fresh Milk,RM-MILK-001,FNB-RM-MILK-001,raw,chilled,7,true
+T1010 Sugar,RM-SUGAR-001,FNB-RM-SUGAR-001,raw,ambient,365,false
+T1010 Bottled Tea,FG-TEA-001,FNB-FG-TEA-001,finished,chilled,30,true
