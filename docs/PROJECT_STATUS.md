@@ -9,11 +9,11 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 | Mục | Trạng thái |
 |---|---|
 | Phase đang active | Phase 2 — Purchase và Procure-to-Stock |
-| Task đang active | T2010 — Test luồng approval và confirmation |
-| Branch | `test/T2010-approval-confirmation-20260812-0120` |
+| Task đang active | T2011 — Test reset approval sau khi đổi vendor |
+| Branch | `test/T2011-reset-vendor-20260812-0130` |
 | PR | Chưa mở — sẽ mở sau commit |
 | PR state | Chưa có |
-| CI gần nhất | T2009/PR #33 green và đã merged |
+| CI gần nhất | T2010/PR #34 green và đã merged |
 | Blocker hiện tại | Không có |
 | Business phase kế tiếp | Tiếp tục Phase 2 theo dependency |
 
@@ -23,7 +23,7 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 |---|---|---|
 | Phase 0 — Repository / CI/CD / security | 🟡 Nền tảng đủ để tiếp tục nghiệp vụ | T0016 done; một số CI/security enhancement vẫn `deferred` |
 | Phase 1 — Master data / shared configuration | ✅ Hoàn tất nghiệp vụ | Product, UoM, partner và warehouse foundation T1001–T1203 đã merge/CI xanh |
-| Phase 2 — Purchase / Procure-to-Stock | 🔵 Đang triển khai | Purchase approval T2001–T2009 done; T2010 đang review; T2011–T2016 và T2101–T2106 còn todo |
+| Phase 2 — Purchase / Procure-to-Stock | 🔵 Đang triển khai | Purchase approval T2001–T2010 done; T2011 đang review; T2012–T2016 và T2101–T2106 còn todo |
 | Phase 3 — Inventory lot / expiry / FEFO | ⚪ Chưa active chính thức | Lot/expiry foundation đã có phần done |
 | Phase 4 — Inventory operations | ⚪ Chưa active | Inventory count, reordering, barcode |
 | Phase 5 — Manufacturing | ⚪ Chưa active | BOM, MO, work order, costing |
@@ -38,7 +38,7 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 
 ## Task tiếp theo dự kiến
 
-Sau khi T2010 merge, chọn task Phase 2 nhỏ nhất có dependency đã `done`; hiện ứng viên kế tiếp là T2011.
+Sau khi T2011 merge, chọn task Phase 2 nhỏ nhất có dependency đã `done`; hiện ứng viên kế tiếp là T2012.
 
 ## Deferred / cố ý chưa làm
 
@@ -50,8 +50,8 @@ Sau khi T2010 merge, chọn task Phase 2 nhỏ nhất có dependency đã `done`
 
 - Mỗi requirement phải có mapping trong `docs/REQUIREMENT_TRACEABILITY_MATRIX.md`.
 - Requirement chỉ được xem là covered khi implementation/configuration, test và documentation evidence liên quan đã merge và CI xanh.
-- T2009 đã bổ sung permission evidence cho BR-02 / FR-PUR-02; mapping RTM vẫn T2001–T2016.
-- T2010 bổ sung full-flow evidence pending → approval → confirmation cho BR-02 / FR-PUR-02; RTM mapping không đổi.
+- T2010 đã bổ sung full-flow evidence pending → approval → confirmation cho BR-02 / FR-PUR-02; mapping RTM vẫn T2001–T2016.
+- T2011 bổ sung regression evidence vendor change reset approval cho BR-02 / FR-PUR-02; RTM mapping không đổi.
 
 ## Quy tắc cập nhật trạng thái dự án
 
@@ -63,10 +63,10 @@ Mỗi PR làm thay đổi task hoặc requirement phải kiểm tra và cập nh
 
 ## Checklist kiểm tra nhanh
 
-- [x] T2009/PR #33 đã merge và CI xanh.
-- [x] Chỉ có một task nghiệp vụ active: T2010.
-- [x] Dependency T2007 của T2010 đã `done`.
-- [x] T2010 nằm trong mapping BR-02 / FR-PUR-02; RTM chưa cần đổi.
+- [x] T2010/PR #34 đã merge và CI xanh.
+- [x] Chỉ có một task nghiệp vụ active: T2011.
+- [x] Dependency T2006 của T2011 đã `done`.
+- [x] T2011 nằm trong mapping BR-02 / FR-PUR-02; RTM chưa cần đổi.
 - [x] Các task `deferred` hiện không phải blocker.
-- [ ] T2010 PR đã merge.
-- [ ] T2010 CI đã xanh.
+- [ ] T2011 PR đã merge.
+- [ ] T2011 CI đã xanh.

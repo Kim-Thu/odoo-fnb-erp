@@ -146,6 +146,23 @@ class TestPurchaseApproval(TransactionCase):
         self.assertFalse(order.approved_by_id)
         self.assertEqual(order.approval_state, "pending")
 
+    def test_vendor_change_resets_existing_approval(self):
+        order = self.order.with_user(self.approver)
+        order.action_approve_fnb()
+        approved_at = order.approved_at
+        self.assertEqual(order.approval_state, "approved")
+
+        replacement_vendor = self.env["res.partner"].create(
+            {"name": "Replacement Ingredient Supplier", "supplier_rank": 1}
+        )
+        order.write({"partner_id": replacement_vendor.id})
+
+        self.assertEqual(order.partner_id, replacement_vendor)
+        self.assertFalse(order.approved_by_id)
+        self.assertFalse(order.approved_at)
+        self.assertTrue(approved_at)
+        self.assertEqual(order.approval_state, "pending")
+
     def test_rejection_wizard_requires_meaningful_reason(self):
         wizard = self.env["fnb.purchase.rejection.wizard"].with_user(
             self.approver
