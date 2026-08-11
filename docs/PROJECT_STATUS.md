@@ -9,11 +9,11 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 | Mục | Trạng thái |
 |---|---|
 | Phase đang active | Phase 1 — Master data và shared configuration |
-| Task đang active | T1106 — Partner import template và field guide |
-| Branch | `docs/T1106-partner-import-guide-20260811-2301` |
+| Task đang active | T1201 — Định nghĩa cấu trúc Raw Materials / Production / Finished Goods |
+| Branch | `docs/T1201-warehouse-structure-20260811-2333` |
 | PR | Chưa mở — sẽ mở sau commit |
 | PR state | Chưa có |
-| CI gần nhất | T1105/PR #28 green và đã merged |
+| CI gần nhất | T1106/PR #29 green và đã merged |
 | Blocker hiện tại | Không có |
 | Business phase kế tiếp | Tiếp tục khép Phase 1 |
 
@@ -22,7 +22,7 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 | Phase | Trạng thái tổng | Ghi chú |
 |---|---|---|
 | Phase 0 — Repository / CI/CD / security | 🟡 Nền tảng đủ để tiếp tục nghiệp vụ | T0016 done; một số CI/security enhancement vẫn `deferred` |
-| Phase 1 — Master data / shared configuration | 🔵 Đang triển khai | Product master T1001–T1010 done; UoM T1101–T1103 done; partner T1104–T1105 done; T1106 đang review; tiếp theo T1201–T1203 |
+| Phase 1 — Master data / shared configuration | 🔵 Đang triển khai | Product T1001–T1010 done; UoM T1101–T1103 done; partner T1104–T1106 done; T1201 đang review; tiếp theo T1202–T1203 |
 | Phase 2 — Purchase / Procure-to-Stock | ⚪ Chưa active chính thức | Một số purchase approval task cũ đã done |
 | Phase 3 — Inventory lot / expiry / FEFO | ⚪ Chưa active chính thức | Lot/expiry foundation đã có phần done |
 | Phase 4 — Inventory operations | ⚪ Chưa active | Inventory count, reordering, barcode |
@@ -38,11 +38,10 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 
 ## Task tiếp theo dự kiến
 
-Sau khi T1106 merge, tiếp tục Phase 1:
+Sau khi T1201 merge, tiếp tục Phase 1:
 
-1. `T1201` — Định nghĩa cấu trúc Raw Materials / Production / Finished Goods.
-2. `T1202` — Demo configuration cho warehouse/location.
-3. `T1203` — Test internal transfer giữa các location đã cấu hình.
+1. `T1202` — Demo configuration cho warehouse/location.
+2. `T1203` — Test internal transfer giữa các location đã cấu hình.
 
 ## Deferred / cố ý chưa làm
 
@@ -54,7 +53,7 @@ Sau khi T1106 merge, tiếp tục Phase 1:
 
 - Mỗi requirement phải có mapping trong `docs/REQUIREMENT_TRACEABILITY_MATRIX.md`.
 - Requirement chỉ được xem là covered khi implementation/configuration, test và documentation evidence liên quan đã merge và CI xanh.
-- Khi thêm hoặc thay đổi requirement, phải cập nhật cả roadmap và traceability matrix trước khi coi scope đã được kiểm soát.
+- T1201 vẫn nằm trong mapping BR-01 / FR-INV-01 → T1201–T1203; task này không thay đổi coverage mapping.
 
 ## Quy tắc cập nhật trạng thái dự án
 
@@ -66,10 +65,10 @@ Mỗi PR làm thay đổi task hoặc requirement phải kiểm tra và cập nh
 
 ## Checklist kiểm tra nhanh
 
-- [x] T1105/PR #28 đã merge và CI xanh.
-- [x] Chỉ có một task nghiệp vụ active: T1106.
-- [x] Dependency T1104 của T1106 đã `done`.
-- [x] T1106 vẫn nằm trong mapping BR-01 / FR-MD-03; traceability matrix chưa cần đổi.
+- [x] T1106/PR #29 đã merge và CI xanh.
+- [x] Chỉ có một task nghiệp vụ active: T1201.
+- [x] Dependency T0016 của T1201 đã `done`.
+- [x] T1201 nằm trong mapping BR-01 / FR-INV-01; RTM chưa cần đổi.
 - [x] Các task `deferred` hiện không phải blocker.
-- [ ] T1106 PR đã merge.
-- [ ] T1106 CI đã xanh.
+- [ ] T1201 PR đã merge.
+- [ ] T1201 CI đã xanh.
