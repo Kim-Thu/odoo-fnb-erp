@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="stock_warehouse_rm_demo" model="stock.warehouse">
+        <field name="name">Raw Materials</field>
+        <field name="code">RM</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="stock_warehouse_prod_demo" model="stock.warehouse">
+        <field name="name">Production</field>
+        <field name="code">PROD</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+
+    <record id="stock_warehouse_fg_demo" model="stock.warehouse">
+        <field name="name">Finished Goods</field>
+        <field name="code">FG</field>
+        <field name="company_id" ref="base.main_company"/>
+    </record>
+</odoo>

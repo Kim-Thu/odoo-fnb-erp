@@ -91,8 +91,8 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T1201 | docs | Xác định cấu trúc kho Raw Materials, Production, Finished Goods | T0016 | review |
-| T1202 | feat | Thêm demo configuration cho warehouse/location | T1201 | todo |
+| T1201 | docs | Xác định cấu trúc kho Raw Materials, Production, Finished Goods | T0016 | done |
+| T1202 | feat | Thêm demo configuration cho warehouse/location | T1201 | review |
 | T1203 | test | Test internal transfer giữa các location đã cấu hình | T1202 | todo |
 
 ## Phase 2 — Purchase và Procure-to-Stock
