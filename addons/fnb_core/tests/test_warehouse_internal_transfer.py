@@ -41,7 +41,7 @@ class TestWarehouseInternalTransfer(TransactionCase):
         )
         move._action_confirm()
         move._action_assign()
-        move.quantity = 2.0
+        move.move_line_ids.quantity = 2.0
         move._action_done()
 
         self.assertEqual(move.state, "done")
