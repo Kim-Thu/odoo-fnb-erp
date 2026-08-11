@@ -29,9 +29,17 @@ class TestWarehouseInternalTransfer(TransactionCase):
 
         self.env["stock.quant"]._update_available_quantity(product, source, 5.0)
 
+        picking = self.env["stock.picking"].create(
+            {
+                "picking_type_id": warehouse_rm.int_type_id.id,
+                "location_id": source.id,
+                "location_dest_id": production.id,
+            }
+        )
         move = self.env["stock.move"].create(
             {
                 "name": "T1203 RM to Production",
+                "picking_id": picking.id,
                 "product_id": product.id,
                 "product_uom_qty": 2.0,
                 "product_uom": product.uom_id.id,
@@ -39,11 +47,12 @@ class TestWarehouseInternalTransfer(TransactionCase):
                 "location_dest_id": production.id,
             }
         )
-        move._action_confirm()
-        move._action_assign()
+        picking.action_confirm()
+        picking.action_assign()
         move.move_line_ids.quantity = 2.0
-        move._action_done()
+        picking.button_validate()
 
+        self.assertEqual(picking.state, "done")
         self.assertEqual(move.state, "done")
         self.assertEqual(
             self.env["stock.quant"]._get_available_quantity(product, source), 3.0
