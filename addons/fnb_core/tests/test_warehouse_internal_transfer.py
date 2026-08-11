@@ -22,7 +22,7 @@ class TestWarehouseInternalTransfer(TransactionCase):
         product = self.env["product.product"].create(
             {
                 "name": "T1203 Demo Transfer Product",
-                "detailed_type": "product",
+                "is_storable": True,
                 "company_id": self.env.company.id,
             }
         )
