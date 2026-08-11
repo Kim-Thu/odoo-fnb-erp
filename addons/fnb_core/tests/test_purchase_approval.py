@@ -79,6 +79,42 @@ class TestPurchaseApproval(TransactionCase):
         order.button_confirm()
         self.assertEqual(order.state, "purchase")
 
+    def test_approval_confirmation_full_flow(self):
+        order = self.env["purchase.order"].create(
+            {
+                "partner_id": self.vendor.id,
+                "order_line": [
+                    (
+                        0,
+                        0,
+                        {
+                            "product_id": self.product.id,
+                            "name": self.product.name,
+                            "product_qty": 2.0,
+                            "product_uom": self.product.uom_po_id.id,
+                            "price_unit": 1500.0,
+                            "date_planned": "2026-08-12 08:00:00",
+                        },
+                    )
+                ],
+            }
+        )
+
+        self.assertTrue(order.approval_required)
+        self.assertEqual(order.approval_state, "pending")
+        with self.assertRaises(ValidationError):
+            order.button_confirm()
+
+        order = order.with_user(self.approver)
+        order.action_approve_fnb()
+        self.assertEqual(order.approval_state, "approved")
+        self.assertEqual(order.approved_by_id, self.approver)
+        self.assertTrue(order.approved_at)
+
+        order.button_confirm()
+        self.assertEqual(order.state, "purchase")
+        self.assertEqual(order.approval_state, "approved")
+
     def test_regular_user_cannot_approve(self):
         order = self.order.with_user(self.regular_user)
 
