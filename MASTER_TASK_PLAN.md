@@ -111,8 +111,8 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 | T2008 | feat | Thêm rejection wizard | T2002 | done |
 | T2009 | test | Test unauthorized approval | T2004 | done |
 | T2010 | test | Test luồng approval và confirmation | T2007 | done |
-| T2011 | test | Test reset approval sau khi đổi vendor | T2006 | review |
-| T2012 | test | Test reset approval sau khi đổi order line | T2006 | todo |
+| T2011 | test | Test reset approval sau khi đổi vendor | T2006 | done |
+| T2012 | test | Test reset approval sau khi đổi order line | T2006 | review |
 | T2013 | test | Test validation của rejection reason | T2008 | todo |
 | T2014 | test | Test rejected order không được confirm | T2007,T2008 | todo |
 | T2015 | test | Test approval records giữ company scope | T2004 | todo |

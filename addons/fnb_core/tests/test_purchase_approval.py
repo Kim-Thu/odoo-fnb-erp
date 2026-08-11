@@ -163,6 +163,21 @@ class TestPurchaseApproval(TransactionCase):
         self.assertTrue(approved_at)
         self.assertEqual(order.approval_state, "pending")
 
+    def test_order_line_change_resets_existing_approval(self):
+        order = self.order.with_user(self.approver)
+        order.action_approve_fnb()
+        approved_at = order.approved_at
+        self.assertEqual(order.approval_state, "approved")
+
+        line = order.order_line
+        line.write({"price_unit": 2000.0})
+
+        self.assertEqual(line.price_unit, 2000.0)
+        self.assertFalse(order.approved_by_id)
+        self.assertFalse(order.approved_at)
+        self.assertTrue(approved_at)
+        self.assertEqual(order.approval_state, "pending")
+
     def test_rejection_wizard_requires_meaningful_reason(self):
         wizard = self.env["fnb.purchase.rejection.wizard"].with_user(
             self.approver
