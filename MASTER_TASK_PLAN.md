@@ -80,8 +80,8 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T1101 | docs | Xác định cấu hình UoM theo hướng Standard First | T0016 | review |
-| T1102 | test | Test UoM conversion hợp lệ trong cùng category | T1101 | todo |
+| T1101 | docs | Xác định cấu hình UoM theo hướng Standard First | T0016 | done |
+| T1102 | test | Test UoM conversion hợp lệ trong cùng category | T1101 | review |
 | T1103 | test | Test UoM conversion sai giữa các category | T1101 | todo |
 | T1104 | docs | Xác định cấu hình customer/vendor master data | T0016 | todo |
 | T1105 | test | Test demo setup cho vendor/customer master | T1104 | todo |
