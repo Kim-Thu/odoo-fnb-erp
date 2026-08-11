@@ -1,0 +1,3 @@
+name,company_type,email,phone,vat,street,city,country_id/id
+Demo Customer T1106,company,customer.t1106@example.com,+840000001106,T1106-CUSTOMER-VAT,101 Demo Street,Ho Chi Minh City,base.vn
+Demo Vendor T1106,company,vendor.t1106@example.com,+840000001107,T1106-VENDOR-VAT,202 Demo Street,Ho Chi Minh City,base.vn
