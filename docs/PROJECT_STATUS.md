@@ -9,20 +9,20 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 | Mục | Trạng thái |
 |---|---|
 | Phase đang active | Phase 1 — Master data và shared configuration |
-| Task đang active | T1202 — Demo configuration cho warehouse/location |
-| Branch | `feat/T1202-warehouse-demo-20260811-2340` |
+| Task đang active | T1203 — Test internal transfer giữa các location đã cấu hình |
+| Branch | `test/T1203-internal-transfer-20260812-0003` |
 | PR | Chưa mở — sẽ mở sau commit |
 | PR state | Chưa có |
-| CI gần nhất | T1201/PR #30 green và đã merged |
+| CI gần nhất | T1202/PR #31 green và đã merged |
 | Blocker hiện tại | Không có |
-| Business phase kế tiếp | Tiếp tục khép Phase 1 |
+| Business phase kế tiếp | Khép Phase 1 sau khi T1203 merge; sau đó chọn task Phase 2 theo dependency |
 
 ## Tiến độ theo phase
 
 | Phase | Trạng thái tổng | Ghi chú |
 |---|---|---|
 | Phase 0 — Repository / CI/CD / security | 🟡 Nền tảng đủ để tiếp tục nghiệp vụ | T0016 done; một số CI/security enhancement vẫn `deferred` |
-| Phase 1 — Master data / shared configuration | 🔵 Đang triển khai | Product, UoM, partner và T1201 done; T1202 đang review; tiếp theo T1203 |
+| Phase 1 — Master data / shared configuration | 🔵 Gần hoàn tất | Product, UoM, partner, T1201–T1202 done; T1203 đang review |
 | Phase 2 — Purchase / Procure-to-Stock | ⚪ Chưa active chính thức | Một số purchase approval task cũ đã done |
 | Phase 3 — Inventory lot / expiry / FEFO | ⚪ Chưa active chính thức | Lot/expiry foundation đã có phần done |
 | Phase 4 — Inventory operations | ⚪ Chưa active | Inventory count, reordering, barcode |
@@ -38,9 +38,7 @@ Tài liệu này là dashboard trạng thái ngắn gọn của dự án. Mục 
 
 ## Task tiếp theo dự kiến
 
-Sau khi T1202 merge, tiếp tục Phase 1:
-
-1. `T1203` — Test internal transfer giữa các location đã cấu hình.
+Sau khi T1203 merge, Phase 1 được khép. Task Phase 2 tiếp theo phải được chọn lại từ `MASTER_TASK_PLAN.md` theo dependency thực tế và trạng thái GitHub lúc đó.
 
 ## Deferred / cố ý chưa làm
 
@@ -52,7 +50,7 @@ Sau khi T1202 merge, tiếp tục Phase 1:
 
 - Mỗi requirement phải có mapping trong `docs/REQUIREMENT_TRACEABILITY_MATRIX.md`.
 - Requirement chỉ được xem là covered khi implementation/configuration, test và documentation evidence liên quan đã merge và CI xanh.
-- T1202 vẫn nằm trong mapping BR-01 / FR-INV-01 → T1201–T1203; task này không thay đổi coverage mapping.
+- T1203 hoàn tất phần automated transfer evidence của BR-01 / FR-INV-01; RTM mapping vẫn là T1201–T1203 và không cần đổi.
 
 ## Quy tắc cập nhật trạng thái dự án
 
@@ -64,10 +62,10 @@ Mỗi PR làm thay đổi task hoặc requirement phải kiểm tra và cập nh
 
 ## Checklist kiểm tra nhanh
 
-- [x] T1201/PR #30 đã merge và CI xanh.
-- [x] Chỉ có một task nghiệp vụ active: T1202.
-- [x] Dependency T1201 của T1202 đã `done` trên GitHub thực tế.
-- [x] T1202 nằm trong mapping BR-01 / FR-INV-01; RTM chưa cần đổi.
+- [x] T1202/PR #31 đã merge và CI xanh.
+- [x] Chỉ có một task nghiệp vụ active: T1203.
+- [x] Dependency T1202 của T1203 đã `done` trên GitHub thực tế.
+- [x] T1203 nằm trong mapping BR-01 / FR-INV-01; RTM chưa cần đổi.
 - [x] Các task `deferred` hiện không phải blocker.
-- [ ] T1202 PR đã merge.
-- [ ] T1202 CI đã xanh.
+- [ ] T1203 PR đã merge.
+- [ ] T1203 CI đã xanh.
