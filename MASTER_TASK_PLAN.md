@@ -55,7 +55,7 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 | T0013 | ci | Build container image trên approved branches | T0009 | deferred |
 | T0014 | ci | Push immutable SHA image lên GHCR | T0013 | deferred |
 | T0015 | docs | Tài liệu hóa protected production environment | T0014 | deferred |
-| T0016 | docs | Thiết lập BRD/SRS project blueprint và phased roadmap | T0002 | review |
+| T0016 | docs | Thiết lập BRD/SRS project blueprint và phased roadmap | T0002 | done |
 
 > Ghi chú Phase 0: các task `deferred` ở trên được tạm hoãn để ưu tiên bài toán nghiệp vụ. Chúng phải được đánh giá lại khi dependency thực tế cần đến và bắt buộc hoàn tất trước release/hardening cuối dự án. Những capability CI hiện đang hoạt động và bảo vệ PR không được phép vô hiệu hóa.
 
@@ -73,7 +73,7 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 | T1006 | feat | Bắt buộc F&B SKU unique theo company | T1001 | done |
 | T1007 | test | Test SKU unique trong cùng company | T1006 | done |
 | T1008 | test | Test cùng SKU ở các company khác nhau | T1006 | done |
-| T1009 | test | Test reject shelf-life âm | T1005 | todo |
+| T1009 | test | Test reject shelf-life âm | T1005 | review |
 | T1010 | docs | Thêm product import template và field guide | T1004 | todo |
 
 ### UoM và partner master
@@ -250,21 +250,21 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T4201 | docs | Xác định flow work center Prepare, Cook, Pack | T4001 | todo |
-| T4202 | feat | Thêm demo configuration work order ba operation | T4201 | todo |
-| T4203 | test | Test sequence và completion của work orders | T4202 | todo |
-| T4204 | test | Test capture duration của work order | T4202 | todo |
+| T4201 | docs | Xác định Prepare Cook Pack work-center flow | T4001 | todo |
+| T4202 | feat | Thêm demo configuration cho work order ba công đoạn | T4201 | todo |
+| T4203 | test | Test work-order sequence và completion | T4202 | todo |
+| T4204 | test | Test work-order duration capture | T4202 | todo |
 | T4205 | docs | Tài liệu hóa work-order demo flow | T4203 | todo |
 
 ### Manufacturing costing
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T4301 | docs | Xác định công thức planned-versus-actual costing | T4108,T4205 | todo |
+| T4301 | docs | Xác định planned-versus-actual costing formula | T4108,T4205 | todo |
 | T4302 | feat | Thêm F&B manufacturing costing calculation | T4301 | todo |
 | T4303 | feat | Thêm operation-cost contribution | T4302 | todo |
 | T4304 | test | Test planned material cost | T4302 | todo |
-| T4305 | test | Test actual cost gồm operation variance | T4303 | todo |
+| T4305 | test | Test actual cost bao gồm operation variance | T4303 | todo |
 | T4306 | docs | Tài liệu hóa costing assumptions và limitations | T4305 | todo |
 
 ## Phase 6 — Quality
@@ -283,156 +283,148 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 | T5101 | feat | Thêm quality alert severity và owner data | T5001 | todo |
 | T5102 | feat | Thêm root-cause và corrective-action fields | T5101 | todo |
 | T5103 | feat | Tạo quality alert từ failed mandatory check | T5004,T5102 | todo |
-| T5104 | test | Test failed check tạo quality alert | T5103 | todo |
-| T5105 | test | Test quality alert giữ company scope | T5103 | todo |
-| T5106 | docs | Tài liệu hóa quality alert và corrective-action flow | T5104,T5105 | todo |
+| T5104 | test | Test quality alert creation và ownership | T5103 | todo |
+| T5105 | test | Test corrective action lifecycle | T5102 | todo |
+| T5106 | docs | Tài liệu hóa quality alert và corrective action | T5105 | todo |
 
 ## Phase 7 — Sales và returns
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
 | T6001 | feat | Thêm Sales dependency | T3113 | todo |
-| T6002 | feat | Validate expired-stock rule trên sales delivery | T6001 | todo |
-| T6003 | feat | Thêm return reason field | T6001 | todo |
-| T6004 | feat | Bắt buộc original lot trên traceable returns | T6003 | todo |
-| T6005 | feat | Thêm quarantine destination cho returned food goods | T6004 | todo |
-| T6006 | test | Test valid sales delivery | T6002 | todo |
-| T6007 | test | Test expired sales delivery bị chặn | T6002 | todo |
-| T6008 | test | Test return thiếu original lot phải fail | T6004 | todo |
-| T6009 | test | Test return đi vào quarantine | T6005 | todo |
-| T6010 | docs | Tài liệu hóa sales và returns flow | T6009 | todo |
-| T6101 | docs | Xác định standard-first quotation/SO/ATP flow | T6001 | todo |
-| T6102 | test | Test quotation sang Sales Order | T6101 | todo |
-| T6103 | test | Test available-to-promise/reservation behavior | T6101 | todo |
-| T6104 | test | Test Sales Order sang delivery linkage | T6102 | todo |
-| T6105 | docs | Tài liệu hóa invoice handoff từ Sales Order | T6104 | todo |
+| T6002 | feat | Xác định return quarantine location | T6001,T1202 | todo |
+| T6003 | feat | Route sales return vào quarantine | T6002 | todo |
+| T6004 | feat | Thêm return inspection outcome | T6003 | todo |
+| T6005 | feat | Route accepted return về stock | T6004 | todo |
+| T6006 | feat | Route rejected return sang scrap | T6004 | todo |
+| T6007 | test | Test accepted return flow | T6005 | todo |
+| T6008 | test | Test rejected return flow | T6006 | todo |
+| T6009 | test | Test return company isolation | T6007 | todo |
+| T6010 | docs | Tài liệu hóa sales-return quarantine flow | T6009 | todo |
+| T6101 | docs | Xác định standard quotation/SO/pricelist flow | T6001 | todo |
+| T6102 | test | Test ATP/reservation trước delivery | T6101 | todo |
+| T6103 | test | Test partial delivery | T6101 | todo |
+| T6104 | test | Test SO to delivery and invoice linkage | T6103 | todo |
+| T6105 | docs | Tài liệu hóa Order-to-Cash flow | T6104 | todo |
 
-## Phase 8 — POS và accounting basic
+## Phase 8 — POS và accounting cơ bản
 
 ### POS
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T6501 | docs | Xác định POS scope theo hướng Standard First | T6001 | todo |
-| T6502 | feat | Thêm POS store/session demo configuration | T6501 | todo |
-| T6503 | test | Test mở và đóng POS session | T6502 | todo |
-| T6504 | test | Test POS order/payment và stock deduction | T6502 | todo |
-| T6505 | test | Test POS pricelist/discount permission demo | T6502 | todo |
-| T6506 | test | Test POS return/refund | T6504 | todo |
-| T6507 | test | Test POS stock giữ company/location scope | T6504 | todo |
-| T6508 | docs | Tài liệu hóa POS-to-Inventory flow | T6506,T6507 | todo |
+| T6501 | docs | Xác định POS scope theo hướng Standard First | T1202 | todo |
+| T6502 | feat | Thêm POS demo configuration | T6501 | todo |
+| T6503 | test | Test POS session open/close | T6502 | todo |
+| T6504 | test | Test POS order, payment và stock deduction | T6502 | todo |
+| T6505 | test | Test pricelist/discount permission demo | T6502 | todo |
+| T6506 | test | Test POS return/refund và stock movement | T6502 | todo |
+| T6507 | test | Test closing balance/reconciliation demo | T6502 | todo |
+| T6508 | docs | Tài liệu hóa POS-to-Inventory flow | T6507 | todo |
 
 ### Accounting basic
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T6601 | docs | Xác định accounting basic scope cho portfolio | T6105,T2106 | todo |
-| T6602 | test | Test customer invoice linkage từ Sales Order | T6601 | todo |
-| T6603 | test | Test vendor bill linkage từ Purchase Order | T6601 | todo |
-| T6604 | test | Test invoice state draft/posted/paid | T6601 | todo |
-| T6605 | test | Test basic payment recording | T6601 | todo |
-| T6606 | test | Test simple invoice reconciliation | T6605 | todo |
-| T6607 | docs | Tài liệu hóa accounting assumptions và limitations | T6606 | todo |
+| T6601 | docs | Xác định accounting basic scope và simulation boundary | T6105,T6508 | todo |
+| T6602 | test | Test customer invoice từ Sales Order | T6601 | todo |
+| T6603 | test | Test customer invoice từ POS flow | T6601 | todo |
+| T6604 | test | Test vendor bill linkage từ PO | T2106,T6601 | todo |
+| T6605 | test | Test draft/posted/paid invoice states | T6601 | todo |
+| T6606 | test | Test basic payment/reconciliation demo | T6605 | todo |
+| T6607 | docs | Tài liệu hóa accounting assumptions và demo flow | T6606 | todo |
 
 ## Phase 9 — Approval và audit
 
-### Generic approval governance
+| ID | Type | Task | Depends on | Status |
+|---|---|---|---|---|
+| T6701 | docs | Xác định generic approval rules theo model/amount/company/role | T2016,T3307 | todo |
+| T6702 | feat | Thêm generic approval rule model | T6701 | todo |
+| T6703 | feat | Thêm pending/approved/rejected lifecycle | T6702 | todo |
+| T6704 | feat | Ghi approver/timestamp/comment | T6703 | todo |
+| T6705 | test | Test approval rule company isolation | T6704 | todo |
+| T6706 | test | Test unauthorized generic approval | T6704 | todo |
+| T6707 | docs | Tài liệu hóa approval governance | T6706 | todo |
+
+## Phase 10 — API và integration
+
+### Existing Product/Stock API foundation
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T6701 | docs | Xác định approval governance theo model/amount/company/role | T2016,T3307 | todo |
-| T6702 | feat | Chuẩn hóa approval metadata draft/pending/approved/rejected | T6701 | todo |
-| T6703 | feat | Thêm approval comment và timestamp conventions | T6702 | todo |
-| T6704 | security | Enforce company scope cho generic approval records | T6702 | todo |
-| T6705 | test | Test approval metadata lifecycle | T6703 | todo |
-| T6706 | test | Test cross-company approval denial | T6704 | todo |
-| T6707 | docs | Tài liệu hóa approval matrix và governance | T6705,T6706 | todo |
-
-## Phase 10 — API, integration và observability
-
-### API foundation
-
-| ID | Type | Task | Depends on | Status |
-|---|---|---|---|---|
-| T7001 | docs | Xác định API contract và threat model | T6010 | todo |
-| T7002 | security | Thêm API authentication mechanism | T7001 | todo |
-| T7003 | security | Enforce company scope trên mọi API request | T7002 | todo |
-| T7004 | feat | Thêm paginated product endpoint | T7003 | todo |
-| T7005 | feat | Thêm paginated stock endpoint | T7003 | todo |
-| T7006 | feat | Thêm lot-expiry endpoint | T7003 | todo |
-| T7007 | security | Thêm input schema validation | T7004 | todo |
-| T7008 | security | Thêm rate-limit/replay-protection design | T7002 | todo |
-| T7009 | security | Thêm structured audit log không chứa sensitive payload | T7003 | todo |
-| T7010 | test | Test reject unauthenticated API | T7002 | todo |
-| T7011 | test | Test deny cross-company API | T7003 | todo |
-| T7012 | test | Test pagination bounds | T7004 | todo |
-| T7013 | test | Test reject invalid input | T7007 | todo |
-| T7014 | docs | Publish API examples chỉ dùng fake data | T7013 | todo |
+| T7001 | feat | Thêm API module foundation | T0010 | todo |
+| T7002 | security | Thêm API authentication boundary | T7001 | todo |
+| T7003 | security | Bắt buộc company scope cho API | T7002 | todo |
+| T7004 | feat | Thêm Product GET list/detail | T7003 | todo |
+| T7005 | feat | Thêm filter và pagination cho Product API | T7004 | todo |
+| T7006 | feat | Thêm Stock GET theo warehouse/product | T7003 | todo |
+| T7007 | test | Test Product API positive path | T7005 | todo |
+| T7008 | test | Test Stock API company isolation | T7006 | todo |
+| T7009 | security | Validate external IDs/domain/field allowlist | T7003 | todo |
+| T7010 | test | Test unauthorized API request | T7002 | todo |
+| T7011 | performance | Review Product/Stock API query performance | T7005,T7006 | todo |
+| T7012 | docs | Thêm Product API documentation | T7007 | todo |
+| T7013 | docs | Thêm Stock API documentation | T7008 | todo |
+| T7014 | test | Test API pagination boundary | T7005 | todo |
 
 ### Sales Order API và idempotency
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T7101 | docs | Xác định Sales Order API create/status contract | T7003,T6104 | todo |
-| T7102 | feat | Thêm POST Sales Order endpoint | T7101 | todo |
-| T7103 | feat | Thêm GET Sales Order status endpoint | T7101 | todo |
-| T7104 | security | Thêm company-scoped idempotency key storage | T7102 | todo |
-| T7105 | feat | Reject duplicate Sales Order create bằng idempotency key | T7104 | todo |
-| T7106 | test | Test Sales Order API idempotency | T7105 | todo |
-| T7107 | test | Test Sales Order API company isolation | T7102,T7003 | todo |
+| T7101 | docs | Xác định Sales Order API contract | T6105,T7003 | todo |
+| T7102 | feat | Thêm POST Sales Order API | T7101 | todo |
+| T7103 | feat | Thêm idempotency-key persistence và lookup | T7102 | todo |
+| T7104 | security | Scope idempotency key theo integration/company | T7103 | todo |
+| T7105 | feat | Thêm GET Sales Order status API | T7102 | todo |
+| T7106 | test | Test duplicate idempotency key không tạo duplicate SO | T7104 | todo |
+| T7107 | docs | Tài liệu hóa Sales Order API examples/errors | T7106 | todo |
 
 ### Webhook, retry và dead-letter
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T7201 | docs | Xác định event contract cho SO confirmed, delivery done, stock below minimum | T7101 | todo |
-| T7202 | feat | Thêm integration event log model | T7201 | todo |
-| T7203 | feat | Thêm webhook delivery simulation | T7202 | todo |
-| T7204 | feat | Thêm retry state và backoff policy | T7203 | todo |
-| T7205 | feat | Thêm dead-letter state/log | T7204 | todo |
-| T7206 | test | Test transient webhook failure được retry | T7204 | todo |
-| T7207 | test | Test permanent failure đi vào dead-letter | T7205 | todo |
-| T7208 | security | Verify integration logs không chứa secret/sensitive payload | T7205 | todo |
+| T7201 | docs | Xác định event contract và retry policy | T7107 | todo |
+| T7202 | feat | Thêm integration event log/queue model | T7201 | todo |
+| T7203 | feat | Emit event khi SO confirmed | T7202 | todo |
+| T7204 | feat | Emit event khi delivery done | T7202 | todo |
+| T7205 | feat | Emit event khi stock below minimum | T7202,T3404 | todo |
+| T7206 | feat | Thêm retry và dead-letter state simulation | T7202 | todo |
+| T7207 | test | Test retry isolation và dead-letter transition | T7206 | todo |
+| T7208 | docs | Tài liệu hóa webhook/queue operations | T7207 | todo |
 
-### Access, audit và observability cho integration
+### API security và observability
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T7301 | docs | Xác định warehouse/company API access matrix | T7003 | todo |
-| T7302 | security | Enforce warehouse scope nơi API yêu cầu | T7301 | todo |
-| T7303 | test | Test warehouse-scoped API denial | T7302 | todo |
-| T7304 | docs | Tài liệu hóa integration access boundaries | T7303 | todo |
-| T7401 | docs | Xác định audit events cho PO approval, inventory adjustment, MO cancel và price changes | T6707 | todo |
-| T7402 | feat | Thêm business audit event model | T7401 | todo |
-| T7403 | feat | Log PO approval và inventory adjustment events | T7402 | todo |
-| T7404 | feat | Log MO cancel và price-change events | T7402 | todo |
-| T7405 | test | Test audit event company isolation | T7403,T7404 | todo |
-| T7406 | security | Review audit payload để tránh sensitive data | T7405 | todo |
-| T7501 | docs | Xác định logging/correlation ID strategy | T7202 | todo |
-| T7502 | feat | Thêm correlation/request ID cho integration flow | T7501 | todo |
-| T7503 | feat | Thêm failed-job operational view/log | T7205 | todo |
-| T7504 | test | Test batch integration lỗi một record không làm hỏng toàn batch | T7204 | todo |
-| T7505 | docs | Tài liệu hóa observability và troubleshooting | T7502,T7503,T7504 | todo |
+| T7301 | security | Thêm warehouse record rule cho integration scope | T7003,T1202 | todo |
+| T7302 | test | Test API warehouse isolation | T7301 | todo |
+| T7303 | security | Redact sensitive integration payloads trong logs | T7202 | todo |
+| T7304 | test | Test log redaction cho auth/sensitive fields | T7303 | todo |
+| T7501 | feat | Thêm request/correlation ID cho integration log | T7202 | todo |
+| T7502 | feat | Thêm failed-job search/action | T7206 | todo |
+| T7503 | test | Test correlation ID propagation | T7501 | todo |
+| T7504 | test | Test failed-job observability | T7502 | todo |
+| T7505 | docs | Tài liệu hóa integration observability | T7504 | todo |
 
 ## Phase 11 — Dashboard và analytics
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T8001 | docs | Xác định operational KPIs và source models | T3209,T4011,T6010 | todo |
-| T8002 | feat | Thêm inventory-aging KPI | T8001 | todo |
-| T8003 | feat | Thêm near-expiry value KPI | T8001 | todo |
-| T8004 | feat | Thêm purchase lead-time KPI | T8001 | todo |
-| T8005 | feat | Thêm manufacturing yield KPI | T8001 | todo |
-| T8006 | performance | Review ORM queries và query plans | T8002,T8003,T8004,T8005 | todo |
-| T8007 | test | Test KPI company isolation | T8006 | todo |
-| T8008 | docs | Tài liệu hóa KPI definitions và limitations | T8007 | todo |
-| T8101 | feat | Thêm stock-on-hand/forecast/below-minimum KPI definitions | T8001,T3404 | todo |
-| T8102 | feat | Thêm PO open/late KPI | T8001,T2102 | todo |
-| T8103 | feat | Thêm MO status/delay/scrap KPI | T8001,T4107 | todo |
-| T8104 | feat | Thêm planned-vs-actual manufacturing cost KPI | T4305,T8001 | todo |
-| T8105 | feat | Thêm sales/POS revenue, top-product và return-rate KPI | T6508,T6010,T8001 | todo |
-| T8106 | test | Test dashboard fixtures trả KPI đúng | T8101,T8102,T8103,T8104,T8105 | todo |
-| T8107 | docs | Tài liệu hóa dashboard data sources và refresh assumptions | T8106 | todo |
+| T8001 | feat | Thêm inventory KPI model/action | T3209 | todo |
+| T8002 | feat | Thêm on-hand/forecast/below-min KPI | T8001,T3404 | todo |
+| T8003 | feat | Thêm near-expiry KPI | T8001,T3204 | todo |
+| T8004 | feat | Thêm MRP state/delay/scrap KPI | T4108 | todo |
+| T8005 | feat | Thêm planned-vs-actual MRP KPI | T4305 | todo |
+| T8006 | feat | Thêm sales revenue/top-product KPI | T6105 | todo |
+| T8007 | test | Test dashboard company isolation | T8002,T8006 | todo |
+| T8008 | docs | Tài liệu hóa dashboard baseline | T8007 | todo |
+| T8101 | feat | Thêm open/late PO KPI | T2106 | todo |
+| T8102 | feat | Thêm quality defect-rate KPI | T5105 | todo |
+| T8103 | feat | Thêm POS revenue theo store/channel | T6507 | todo |
+| T8104 | feat | Thêm return-rate KPI | T6009,T6506 | todo |
+| T8105 | feat | Thêm material-loss/scrap KPI | T4107 | todo |
+| T8106 | test | Test KPI fixture với deterministic demo data | T8508 | todo |
+| T8107 | docs | Tài liệu hóa KPI definitions và business meaning | T8106 | todo |
 
 ## Phase 12 — Demo data, E2E và UAT
 
@@ -440,75 +432,62 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T8501 | docs | Xác định synthetic demo dataset blueprint | T0016 | todo |
-| T8502 | feat | Thêm 30 raw materials và 15 finished products demo | T8501,T1010 | todo |
-| T8503 | feat | Thêm 10 vendors và 20 customers demo | T8501,T1106 | todo |
-| T8504 | feat | Thêm 3 warehouses và supporting locations demo | T8501,T1202 | todo |
-| T8505 | feat | Thêm 10 BOM và work-order demo setup | T8502,T4202 | todo |
-| T8506 | feat | Thêm 50 ingredient lots với expiry data | T8502,T3004 | todo |
-| T8507 | feat | Thêm representative transactional demo fixtures | T8503,T8504,T8505,T8506 | todo |
-| T8508 | test | Validate demo dataset integrity và company scope | T8507 | todo |
+| T8501 | docs | Xác định synthetic data dictionary và naming convention | T0016 | todo |
+| T8502 | feat | Thêm tối thiểu 30 raw-material demo records | T8501,T1101 | todo |
+| T8503 | feat | Thêm tối thiểu 15 finished-product demo records | T8501,T1101 | todo |
+| T8504 | feat | Thêm 10 vendors và 20 customers synthetic | T1105,T8501 | todo |
+| T8505 | feat | Thêm 3 warehouse demo dataset | T1202,T8501 | todo |
+| T8506 | feat | Thêm tối thiểu 10 BOM demo records | T4003,T8501 | todo |
+| T8507 | feat | Thêm tối thiểu 50 raw-material lot records | T3011,T8501 | todo |
+| T8508 | feat | Thêm tối thiểu 100 synthetic business transactions | T8502,T8503,T8504,T8505,T8506,T8507 | todo |
 
-### End-to-end và UAT
+### Automated acceptance và UAT
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T8601 | test | Chạy minimum automated scenarios theo SRS 7.1 | T8508 | todo |
-| T8602 | test | UAT-01 mua nguyên liệu và nhập kho | T8508,T5007 | todo |
-| T8603 | test | UAT-02 sản xuất thành phẩm theo BOM | T8508,T4007 | todo |
-| T8604 | test | UAT-03 quality fail và corrective action | T5106 | todo |
-| T8605 | test | UAT-04 bán hàng và giao hàng | T6010 | todo |
-| T8606 | test | UAT-05 POS sale và return | T6508 | todo |
-| T8607 | test | UAT-06 inventory count và variance approval | T3307 | todo |
-| T8608 | test | UAT-07 API tạo Sales Order từ external system | T7107 | todo |
+| T8601 | test | Chạy và ghi evidence bộ automated acceptance tối thiểu | T8508 | todo |
+| T8602 | test | UAT-01 Purchase + receipt | T2106,T8508 | todo |
+| T8603 | test | UAT-02 BOM manufacturing | T4305,T8508 | todo |
+| T8604 | test | UAT-03 Quality fail và corrective action | T5105,T8508 | todo |
+| T8605 | test | UAT-04 Sale + delivery | T6105,T8508 | todo |
+| T8606 | test | UAT-05 POS sale + return | T6507,T8508 | todo |
+| T8607 | test | UAT-06 Inventory count approval | T3307,T8508 | todo |
+| T8608 | test | UAT-07 External Sales Order API | T7106,T8508 | todo |
 
 ### Portfolio acceptance evidence
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T8701 | docs | Viết system architecture document | T0016 | todo |
-| T8702 | docs | Viết module/custom-data ERD | T8701 | todo |
-| T8703 | docs | Viết role/permission matrix | T6707,T7304 | todo |
-| T8704 | docs | Hoàn thiện API documentation | T7014,T7107,T7208 | todo |
-| T8705 | docs | Hoàn thiện README setup và demo guide | T8608 | todo |
-| T8706 | docs | Chuẩn bị end-to-end demo script | T8602,T8603,T8605,T8606,T8608 | todo |
-| T8707 | test | Verify Docker Compose cài được toàn bộ custom modules | T8705 | todo |
-| T8708 | docs | Ghi nhận portfolio acceptance checklist và evidence | T8702,T8703,T8704,T8706,T8707 | todo |
+| T8701 | docs | Tài liệu hóa system architecture cuối cùng | T8601 | todo |
+| T8702 | docs | Thêm module map và dependency diagram | T8701 | todo |
+| T8703 | docs | Thêm ERD cho custom data/model extensions | T8701 | todo |
+| T8704 | docs | Thêm role/permission matrix | T8601 | todo |
+| T8705 | docs | Thêm API contract tổng hợp | T8608 | todo |
+| T8706 | docs | Thêm end-to-end demo script | T8602,T8603,T8605,T8606,T8608 | todo |
+| T8707 | docs | Thêm video/demo evidence guide | T8706 | todo |
+| T8708 | docs | Cập nhật README setup/demo/acceptance summary | T8707 | todo |
 
-## Phase 13 — Security hardening và release
+## Phase 13 — Hardening và release
 
 | ID | Type | Task | Depends on | Status |
 |---|---|---|---|---|
-| T9001 | security | Review toàn bộ ACLs | T7014,T8008 | todo |
-| T9002 | security | Review toàn bộ record rules | T9001 | todo |
-| T9003 | security | Tìm và justify mọi `sudo()` | T9002 | todo |
-| T9004 | security | Tìm và review mọi raw SQL call | T9002 | todo |
-| T9005 | security | Review sensitive logging và error messages | T9002 | todo |
-| T9006 | security | Test multi-company isolation end to end | T9002 | todo |
-| T9007 | performance | Chạy representative data performance tests | T9006,T8508 | todo |
-| T9008 | test | Chạy complete regression suite | T9007,T8601 | todo |
-| T9009 | docs | Chuẩn bị UAT scenarios và evidence index | T9008,T8608 | todo |
-| T9010 | docs | Chuẩn bị demo script và architecture diagram | T9009,T8706 | todo |
-| T9011 | ci | Build release candidate image | T9008 | todo |
-| T9012 | security | Generate và review SBOM | T9011 | todo |
-| T9013 | docs | Viết backup, restore và rollback runbook | T9011 | todo |
-| T9014 | ci | Deploy lên protected staging environment | T9012,T9013 | todo |
-| T9015 | test | Chạy staging smoke test | T9014 | todo |
-| T9016 | docs | Publish release notes | T9015 | todo |
+| T9001 | security | Define final group model | T8601 | todo |
+| T9002 | security | Add read ACLs | T9001 | todo |
+| T9003 | security | Add user write ACLs | T9002 | todo |
+| T9004 | security | Add manager delete ACLs | T9003 | todo |
+| T9005 | security | Add company record rule | T9002 | todo |
+| T9006 | test | Test cross-company access denial | T9005 | todo |
+| T9007 | security | Audit all `sudo()` usage | T9006 | todo |
+| T9008 | security | Audit all raw SQL usage | T9007 | todo |
+| T9009 | docs | Document environment variables | T9008 | todo |
+| T9010 | ci | Finalize Dev image | T9009 | todo |
+| T9011 | ci | Finalize CI image | T9010 | todo |
+| T9012 | ci | Verify clean database install | T9011 | todo |
+| T9013 | ci | Verify upgrade path | T9012 | todo |
+| T9014 | security | Run final secret and dependency scan | T9013 | todo |
+| T9015 | test | Run full automated test suite | T9014 | todo |
+| T9016 | docs | Write release checklist and rollback guide | T9015 | todo |
 
-## Thuật toán thực thi
+## Completion rule
 
-1. Đọc file này và `docs/DEVELOPMENT_RULES.md`.
-2. Nếu có PR đang mở, phải xử lý PR/task hiện tại trước; không mở task song song.
-3. Nếu CI đang chạy/queued thì dừng lượt hiện tại.
-4. Nếu CI fail thì đọc đúng job/log lỗi và chỉ sửa task hiện tại trên branch hiện tại.
-5. Nếu CI xanh và PR đủ điều kiện thì merge trước khi chọn task mới.
-6. Khi chọn task mới, ưu tiên phase nghiệp vụ đang active và chọn task `todo` nhỏ nhất có dependency trực tiếp đã `done`; task Phase 0 `deferred` không chặn trừ khi trở thành dependency hoặc blocker thực tế.
-7. Tạo branch theo task type, ID, short name và current timestamp.
-8. Tạo hoặc chuyển matching task file sang `tasks/in-progress/`.
-9. Chỉ implement đúng một task.
-10. Chạy declared tests và global security checks phù hợp với task.
-11. Commit với các section chi tiết Added/Changed/Fixed/Tests/Security theo validator hiện hành.
-12. Chuyển task sang `tasks/review/` và cập nhật bảng trạng thái thành `review`.
-13. Task chỉ chuyển `done` sau khi merge và CI xanh.
-14. Đánh giá lại mọi task `deferred` trước Phase 13; tất cả blocker release phải được hoàn tất trước release candidate.
+A task chỉ chuyển sang `done` sau khi PR đã merge và CI của task đã xanh. `review` chỉ dùng khi implementation/test/docs của task đã sẵn sàng để review. `deferred` chỉ dùng cho task không blocking và không được tính là hoàn tất.
