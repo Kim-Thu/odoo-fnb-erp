@@ -93,7 +93,7 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 |---|---|---|---|---|
 | T1201 | docs | Xác định cấu trúc kho Raw Materials, Production, Finished Goods | T0016 | done |
 | T1202 | feat | Thêm demo configuration cho warehouse/location | T1201 | done |
-| T1203 | test | Test internal transfer giữa các location đã cấu hình | T1202 | review |
+| T1203 | test | Test internal transfer giữa các location đã cấu hình | T1202 | done |
 
 ## Phase 2 — Purchase và Procure-to-Stock
 
@@ -109,7 +109,7 @@ Mỗi task phải đáp ứng các mục phù hợp bên dưới:
 | T2006 | feat | Reset approval khi commercial fields thay đổi | T2004 | done |
 | T2007 | feat | Chặn confirmation trước khi được approval | T2004 | done |
 | T2008 | feat | Thêm rejection wizard | T2002 | done |
-| T2009 | test | Test unauthorized approval | T2004 | todo |
+| T2009 | test | Test unauthorized approval | T2004 | review |
 | T2010 | test | Test luồng approval và confirmation | T2007 | todo |
 | T2011 | test | Test reset approval sau khi đổi vendor | T2006 | todo |
 | T2012 | test | Test reset approval sau khi đổi order line | T2006 | todo |
