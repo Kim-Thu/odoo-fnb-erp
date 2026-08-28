@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_fnb_products" model="ir.actions.act_window">
+        <field name="name">F&amp;B Products</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_fnb_root"
+        name="F&amp;B Management"
+        action="action_fnb_products"
+        sequence="10"
+        web_icon="fnb_core,static/description/icon.png"
+    />
+</odoo>

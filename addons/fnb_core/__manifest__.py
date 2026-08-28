@@ -1,7 +1,7 @@
 {
     "name": "F&B Core",
     "summary": "Core master data, approval and traceability workflows for the F&B ERP portfolio project",
-    "version": "18.0.1.3.0",
+    "version": "18.0.1.3.1",
     "category": "Operations/Inventory",
     "license": "LGPL-3",
     "author": "Kim Thu",
@@ -11,9 +11,10 @@
         "security/ir.model.access.csv",
         "data/warehouse_demo.xml",
         "views/product_template_views.xml",
+        "views/fnb_menu_views.xml",
         "views/purchase_rejection_wizard_views.xml",
         "views/purchase_order_views.xml",
     ],
     "installable": True,
-    "application": False,
+    "application": True,
 }
