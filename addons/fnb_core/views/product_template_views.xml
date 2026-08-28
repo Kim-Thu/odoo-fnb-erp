@@ -4,17 +4,19 @@
         <field name="name">product.template.form.fnb.core</field>
         <field name="model">product.template</field>
         <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="priority">50</field>
         <field name="arch" type="xml">
             <xpath expr="//sheet/notebook" position="inside">
                 <page string="F&amp;B Operations" name="fnb_operations">
-                    <group>
+                    <group string="F&amp;B Product Information">
                         <group>
-                            <field name="fnb_internal_sku"/>
-                            <field name="fnb_ingredient_classification"/>
+                            <field name="fnb_internal_sku" string="F&amp;B Internal SKU"/>
+                            <field name="fnb_ingredient_classification" string="F&amp;B Classification"/>
+                            <field name="fnb_requires_traceability" string="Require Lot &amp; Expiry Traceability"/>
                         </group>
                         <group>
-                            <field name="fnb_storage_condition"/>
-                            <field name="fnb_shelf_life_days"/>
+                            <field name="fnb_storage_condition" string="Storage Condition"/>
+                            <field name="fnb_shelf_life_days" string="Shelf Life (Days)"/>
                         </group>
                     </group>
                 </page>
