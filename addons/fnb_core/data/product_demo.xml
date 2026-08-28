@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="product_template_fnb_demo_milk" model="product.template">
+        <field name="name">F&amp;B Demo Fresh Milk</field>
+        <field name="default_code">RM-MILK-001</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="purchase_ok">True</field>
+        <field name="sale_ok">False</field>
+        <field name="fnb_internal_sku">FNB-RM-MILK-001</field>
+        <field name="fnb_ingredient_classification">raw</field>
+        <field name="fnb_storage_condition">chilled</field>
+        <field name="fnb_shelf_life_days">7</field>
+        <field name="fnb_requires_traceability">True</field>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date">True</field>
+    </record>
+
+    <record id="product_template_fnb_demo_sugar" model="product.template">
+        <field name="name">F&amp;B Demo Sugar</field>
+        <field name="default_code">RM-SUGAR-001</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="purchase_ok">True</field>
+        <field name="sale_ok">False</field>
+        <field name="fnb_internal_sku">FNB-RM-SUGAR-001</field>
+        <field name="fnb_ingredient_classification">raw</field>
+        <field name="fnb_storage_condition">ambient</field>
+        <field name="fnb_shelf_life_days">365</field>
+        <field name="fnb_requires_traceability">False</field>
+    </record>
+
+    <record id="product_template_fnb_demo_bottled_tea" model="product.template">
+        <field name="name">F&amp;B Demo Bottled Tea</field>
+        <field name="default_code">FG-TEA-001</field>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="purchase_ok">False</field>
+        <field name="sale_ok">True</field>
+        <field name="fnb_internal_sku">FNB-FG-TEA-001</field>
+        <field name="fnb_ingredient_classification">finished</field>
+        <field name="fnb_storage_condition">chilled</field>
+        <field name="fnb_shelf_life_days">30</field>
+        <field name="fnb_requires_traceability">True</field>
+        <field name="tracking">lot</field>
+        <field name="use_expiration_date">True</field>
+    </record>
+</odoo>
