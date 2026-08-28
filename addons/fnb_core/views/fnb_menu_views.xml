@@ -11,6 +11,5 @@
         name="F&amp;B Management"
         action="action_fnb_products"
         sequence="10"
-        web_icon="fnb_core,static/description/icon.png"
     />
 </odoo>
